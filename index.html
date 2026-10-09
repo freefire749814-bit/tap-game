@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Global Tap Battle - Mega Cash Tournament</title>
   
-  <!-- Telegram Web App SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- AdsGram SDK -->
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -24,7 +21,7 @@
       align-items: center;
       background: #111827;
       border: 1px solid #1f2937;
-      padding: 7px 12px;
+      padding: 8px 12px;
       border-radius: 10px;
       margin: 8px 0;
       font-size: 13px;
@@ -104,7 +101,7 @@
     .my-info { text-align: left; }
     .my-name { font-size: 14px; font-weight: bold; color: #38bdf8; }
     .my-status { font-size: 11px; color: #94a3b8; }
-    .my-score-val { font-size: 22px; font-weight: 900; color: #f59e0b; }
+    .my-score-val { font-size: 24px; font-weight: 900; color: #f59e0b; }
 
     /* राउंड और टैप सीमा कार्ड */
     .progress-box {
@@ -186,18 +183,18 @@
     .share-btn:active { transform: scale(0.97); }
 
     /* टैप बटन */
-    .tap-area { margin: 4px 0 10px 0; }
+    .tap-area { margin: 6px 0 12px 0; }
     .tap-btn {
-      width: 155px;
-      height: 155px;
+      width: 160px;
+      height: 160px;
       border-radius: 50%;
       border: 6px solid #ea580c;
       background: radial-gradient(circle, #f97316 0%, #b91c1c 100%);
       color: #ffffff;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 900;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(220, 38, 38, 0.5);
+      box-shadow: 0 8px 24px rgba(220, 38, 38, 0.5);
       outline: none;
       transition: transform 0.05s ease;
       margin: auto;
@@ -206,7 +203,7 @@
       justify-content: center;
       flex-direction: column;
     }
-    .tap-btn:active { transform: scale(0.92); }
+    .tap-btn:active { transform: scale(0.90); }
     .tap-btn.locked {
       background: #475569;
       border-color: #334155;
@@ -224,10 +221,10 @@
       text-align: left;
     }
     .board-header { font-size: 12px; font-weight: bold; color: #94a3b8; display: flex; justify-content: space-between; border-bottom: 1px solid #1f2937; padding-bottom: 5px; margin-bottom: 5px; }
-    .leader-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; border-radius: 6px; margin-bottom: 4px; background: #1a2234; font-size: 12px; }
+    .leader-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px; background: #1a2234; font-size: 12px; }
     .leader-row.rank-1 { border: 1px solid #f59e0b; background: rgba(245, 158, 11, 0.2); }
     .leader-left { display: flex; align-items: center; gap: 6px; }
-    .rank-num { font-weight: bold; width: 20px; text-align: center; }
+    .rank-num { font-weight: bold; width: 22px; text-align: center; }
     .user-sub { color: #94a3b8; font-size: 10px; }
     .row-right { display: flex; align-items: center; gap: 8px; }
     .prize-chip { font-size: 10px; font-weight: 800; color: #4ade80; background: rgba(74, 222, 128, 0.1); padding: 2px 5px; border-radius: 4px; }
@@ -244,7 +241,7 @@
     <!-- टाइमर बार -->
     <div class="timer-bar">
       <span>🏆 <b id="roundLabelText">राउंड 1 (500 टैप - 2h)</b></span>
-      <span>⏳ शेष समय: <span class="timer-val" id="timerDisplay">01:59:59</span></span>
+      <span>⏳ शेष: <span class="timer-val" id="timerDisplay">--:--:--</span></span>
     </div>
 
     <!-- प्राइज़ पूल ग्रिड -->
@@ -280,7 +277,7 @@
       <div class="crown-header">👑 1st Rank Champion (₹1,000) 👑</div>
       <div class="winner-details">
         <div>
-          <span>👤 <b>नाम:</b> <span id="wName">प्रतियोगी</span></span>
+          <span>👤 <b>नाम:</b> <span id="wName">आप</span></span>
           <span class="winner-reward-tag">जीतेगा: ₹1000</span>
         </div>
         <div>✈️ <b>Telegram:</b> <span id="wUsername">@champion</span></div>
@@ -293,14 +290,14 @@
     <div class="my-card">
       <div class="my-info">
         <div class="my-name" id="myNameText">खिलाड़ी</div>
-        <div class="my-status">आपकी रैंक: <b id="myRankText" style="color: #38bdf8;">#--</b> | संभावित प्राइज़: <b id="myPrizeText" style="color: #4ade80;">₹0</b></div>
+        <div class="my-status">आपकी रैंक: <b id="myRankText" style="color: #38bdf8;">#1</b> | संभावित प्राइज़: <b id="myPrizeText" style="color: #4ade80;">₹1,000</b></div>
       </div>
       <div class="my-score-val" id="myScoreText">0</div>
     </div>
 
     <!-- राउंड और टैप सीमा -->
     <div class="progress-box">
-      <span>🎯 राउंड: <b id="currentRoundLevel" style="color: #38bdf8;">500 टैप</b></span>
+      <span>🎯 राउंड: <b id="currentRoundLevel" style="color: #38bdf8;">500 टैप सीमा</b></span>
       <span>टैप प्रगति: <b id="roundTapDisplay" style="color: #fde047;">0 / 500</b></span>
     </div>
 
@@ -311,10 +308,10 @@
     <div class="task-card">
       <div class="task-header">
         <span>🎁 रिवॉर्ड टास्क</span>
-        <span id="taskProgressText" style="color: #fde047;">प्रगति: 0/2 Ads</span>
+        <span id="taskProgressText" style="color: #fde047;">टास्क: 2 ऐड्स = +500 Taps</span>
       </div>
       <button class="ad-booster-btn" id="adActionBtn" onclick="handleAdTaskClick()">
-        <span id="adButtonTitle">📺 ऐड देखें और बोनस लें</span>
+        <span id="adButtonTitle">📺 ऐड देखें (0/2)</span>
         <span class="ad-bonus-badge" id="adBonusBadge">+500 TAPS</span>
       </button>
     </div>
@@ -324,7 +321,7 @@
       <span>🚀 दोस्तों को शेयर करें (Invite Friends)</span>
     </button>
 
-    <!-- बड़ा टैप बटन (Instant Click) -->
+    <!-- बड़ा टैप बटन -->
     <div class="tap-area">
       <button class="tap-btn" id="tapButton" onclick="handleTap()">
         TAP! 🔥
@@ -336,51 +333,46 @@
     <div class="board-card">
       <div class="board-header">
         <span>🏆 टॉप 10 लीडरबोर्ड</span>
-        <span style="color: #4ade80;">● REALTIME</span>
+        <span style="color: #4ade80;" id="liveStatusTxt">● REALTIME</span>
       </div>
-      <div id="leaderboardList">लोड हो रहा है...</div>
+      <div id="leaderboardList"></div>
     </div>
   </div>
 
-  <!-- Firebase Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
   <script>
+    // --- 1. टेलीग्राम वेब ऐप इनिशियलाइज़ेशन ---
     const tg = window.Telegram?.WebApp;
     if (tg) {
-      tg.ready();
-      tg.expand();
+      try {
+        tg.ready();
+        tg.expand();
+      } catch(e) {}
     }
 
-    function showNotice(msg) {
-      const box = document.getElementById("noticeBox");
-      if (!box) return;
-      box.innerText = msg;
-      box.style.display = "block";
-      setTimeout(() => { box.style.display = "none"; }, 3000);
-    }
+    // खिलाड़ी डेटा
+    const tgUser = tg?.initDataUnsafe?.user;
+    const playerId = tgUser ? ("tg_" + tgUser.id) : (localStorage.getItem("tap_uid_v14") || ("user_" + Math.random().toString(36).substr(2, 9)));
+    localStorage.setItem("tap_uid_v14", playerId);
 
-    function shareGameWithFriends() {
-      const shareUrl = "https://t.me/asif_s0_bot/play";
-      const shareText = "🔥 Tap Battle खेलो और ₹1,000 जीतो! अभी मेरे साथ मुकाबला करो 👇";
-      const fullTelegramShareLink = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-      if (tg?.openTelegramLink) {
-        tg.openTelegramLink(fullTelegramShareLink);
-      } else {
-        window.open(fullTelegramShareLink, '_blank');
-      }
-    }
+    const playerName = tgUser ? (tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : "")) : (localStorage.getItem("tap_uname") || "खिलाड़ी " + Math.floor(Math.random()*900 + 100));
+    const telegramUsername = tgUser?.username ? ("@" + tgUser.username) : "@user";
+    const telegramId = tgUser?.id ? tgUser.id.toString() : playerId;
 
-    // राउंड नियम (500 टैप/2h, 1500 टैप/3h, 2500 टैप/3h)
+    localStorage.setItem("tap_uname", playerName);
+    document.getElementById("myNameText").innerText = playerName;
+    document.getElementById("wUserId").innerText = telegramId;
+    document.getElementById("wUsername").innerText = telegramUsername;
+
+    // --- 2. लोकल-फर्स्ट स्टेट (बिना नेटवर्क के भी 100% काम करेगा) ---
+    let myScore = parseInt(localStorage.getItem("tap_local_score") || "0");
+    let currentRoundIndex = parseInt(localStorage.getItem("tap_rnd_idx") || "0");
+    let currentRoundTaps = parseInt(localStorage.getItem("tap_rnd_taps") || "0");
+
     const roundConfig = [
       { limit: 500, durationHours: 2, label: "राउंड 1 (500 टैप - 2h)" },
       { limit: 1500, durationHours: 3, label: "राउंड 2 (1500 टैप - 3h)" },
       { limit: 2500, durationHours: 3, label: "राउंड 3 (2500 टैप - 3h)" }
     ];
-
-    let currentRoundIndex = parseInt(localStorage.getItem("tap_rnd_idx") || "0");
-    let currentRoundTaps = parseInt(localStorage.getItem("tap_rnd_taps") || "0");
 
     const rewardTasks = [
       { requiredAds: 2, bonus: 500, title: "2 ऐड्स = +500 Taps" },
@@ -391,15 +383,12 @@
     let taskIndex = parseInt(localStorage.getItem("task_idx") || "0");
     let adsWatchedInCurrentTask = parseInt(localStorage.getItem("task_ad_count") || "0");
 
-    // तुरंत लोकल स्कोर लोड करना ताकि टैप कभी न रुके
-    let myScore = parseInt(localStorage.getItem("tap_cached_score") || "0");
-    document.getElementById("myScoreText").innerText = myScore;
-
-    function updateTaskUI() {
-      const task = rewardTasks[taskIndex];
-      document.getElementById("adButtonTitle").innerText = `📺 ऐड देखें (${adsWatchedInCurrentTask}/${task.requiredAds})`;
-      document.getElementById("adBonusBadge").innerText = `+${task.bonus} TAPS`;
-      document.getElementById("taskProgressText").innerText = `टास्क: ${task.title}`;
+    function showNotice(msg) {
+      const box = document.getElementById("noticeBox");
+      if (!box) return;
+      box.innerText = msg;
+      box.style.display = "block";
+      setTimeout(() => { box.style.display = "none"; }, 3000);
     }
 
     function updateRoundUI() {
@@ -413,28 +402,75 @@
 
       if (currentRoundTaps >= round.limit) {
         btn.classList.add("locked");
-        sub.innerText = "टैप सीमा पूरी! अगला राउंड";
+        sub.innerText = "राउंड पूरा! फिर दबाएँ";
       } else {
         btn.classList.remove("locked");
         sub.innerText = "दबाते रहो";
       }
     }
 
+    function updateTaskUI() {
+      const task = rewardTasks[taskIndex];
+      document.getElementById("adButtonTitle").innerText = `📺 ऐड देखें (${adsWatchedInCurrentTask}/${task.requiredAds})`;
+      document.getElementById("adBonusBadge").innerText = `+${task.bonus} TAPS`;
+      document.getElementById("taskProgressText").innerText = `टास्क: ${task.title}`;
+    }
+
+    function renderLocalState() {
+      document.getElementById("myScoreText").innerText = myScore;
+      document.getElementById("wScore").innerText = myScore;
+      document.getElementById("wName").innerText = playerName;
+      updateRoundUI();
+      updateTaskUI();
+    }
+    renderLocalState();
+
+    // --- 3. टैप फंक्शन (तुरंत चलेगा) ---
+    function handleTap() {
+      const currentConfig = roundConfig[currentRoundIndex];
+
+      if (currentRoundTaps >= currentConfig.limit) {
+        currentRoundIndex = (currentRoundIndex + 1) % roundConfig.length;
+        currentRoundTaps = 0;
+        localStorage.setItem("tap_rnd_idx", currentRoundIndex);
+        localStorage.setItem("tap_rnd_taps", currentRoundTaps);
+      }
+
+      currentRoundTaps++;
+      myScore++;
+
+      localStorage.setItem("tap_rnd_taps", currentRoundTaps);
+      localStorage.setItem("tap_local_score", myScore);
+
+      document.getElementById("myScoreText").innerText = myScore;
+      document.getElementById("wScore").innerText = myScore;
+      updateRoundUI();
+
+      // अगर डेटाबेस तैयार है तो बैकग्राउंड में भेजें
+      sendScoreToDB();
+
+      if (tg?.HapticFeedback) {
+        try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
+      }
+    }
+
+    // --- 4. ऐड टास्क क्लिक ---
     function handleAdTaskClick() {
       adsWatchedInCurrentTask++;
       const currentTask = rewardTasks[taskIndex];
 
       if (adsWatchedInCurrentTask >= currentTask.requiredAds) {
         myScore += currentTask.bonus;
-        localStorage.setItem("tap_cached_score", myScore);
+        localStorage.setItem("tap_local_score", myScore);
         document.getElementById("myScoreText").innerText = myScore;
-        syncScoreToFirebase();
+        document.getElementById("wScore").innerText = myScore;
+        sendScoreToDB();
 
         showNotice(`🎉 बधाई! टास्क पूरा: +${currentTask.bonus} टैप मिले!`);
         taskIndex = (taskIndex + 1) % rewardTasks.length;
         adsWatchedInCurrentTask = 0;
       } else {
-        showNotice(`👍 ऐड गिना गया! 1 और देखें (${adsWatchedInCurrentTask}/${currentTask.requiredAds})`);
+        showNotice(`👍 ऐड दर्ज हुआ! 1 और देखें (${adsWatchedInCurrentTask}/${currentTask.requiredAds})`);
       }
 
       localStorage.setItem("task_idx", taskIndex);
@@ -442,21 +478,59 @@
       updateTaskUI();
     }
 
-    function runTimer() {
+    // --- 5. दोस्तों को शेयर करना ---
+    function shareGameWithFriends() {
+      const shareUrl = "https://t.me/asif_s0_bot/play";
+      const shareText = "🔥 Tap Battle खेलो और ₹1,000 जीतो! अभी मेरे साथ मुकाबला करो 👇";
+      const fullTelegramShareLink = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+      if (tg?.openTelegramLink) {
+        tg.openTelegramLink(fullTelegramShareLink);
+      } else {
+        window.open(fullTelegramShareLink, '_blank');
+      }
+    }
+
+    // --- 6. लाइव टाइमर (बिना रुके चलेगा) ---
+    function startTimer() {
       function tick() {
         const round = roundConfig[currentRoundIndex];
         const duration = round.durationHours * 60 * 60 * 1000;
-        const remaining = duration - (Date.now() % duration);
+        const now = Date.now();
+        const remaining = duration - (now % duration);
+
         const h = Math.floor(remaining / 3600000);
         const m = Math.floor((remaining % 3600000) / 60000);
         const s = Math.floor((remaining % 60000) / 1000);
         const pad = (n) => n.toString().padStart(2, '0');
-        document.getElementById("timerDisplay").innerText = `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
+
+        const el = document.getElementById("timerDisplay");
+        if (el) el.innerText = `${pad(h)}:${pad(m)}:${pad(s)}`;
       }
       setInterval(tick, 1000);
       tick();
     }
-    runTimer();
+    startTimer();
+
+    // डमी इनिशियल लीडरबोर्ड ताकि स्क्रीन कभी खाली न दिखे
+    function renderInitialLeaderboard() {
+      const listDiv = document.getElementById("leaderboardList");
+      listDiv.innerHTML = `
+        <div class="leader-row rank-1">
+          <div class="leader-left">
+            <span class="rank-num">🥇</span>
+            <div>
+              <div>${playerName}</div>
+              <div class="user-sub">${telegramUsername}</div>
+            </div>
+          </div>
+          <div class="row-right">
+            <span class="prize-chip">₹1,000</span>
+            <span class="score-txt" id="leadFirstScore">${myScore}</span>
+          </div>
+        </div>
+      `;
+    }
+    renderInitialLeaderboard();
 
     function getPrize(rank) {
       if (rank === 1) return "₹1,000";
@@ -468,100 +542,28 @@
       return "₹0";
     }
 
-    // खिलाड़ी प्रोफाइल
-    const tgUser = tg?.initDataUnsafe?.user;
-    const playerId = tgUser ? ("tg_" + tgUser.id) : (localStorage.getItem("tap_uid_v12") || ("user_" + Math.random().toString(36).substr(2, 9)));
-    localStorage.setItem("tap_uid_v12", playerId);
-
-    const playerName = tgUser ? (tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : "")) : (localStorage.getItem("tap_uname") || "खिलाड़ी " + Math.floor(Math.random()*900 + 100));
-    const telegramUsername = tgUser?.username ? ("@" + tgUser.username) : "उपलब्ध नहीं";
-    const telegramId = tgUser?.id ? tgUser.id.toString() : playerId;
-
-    document.getElementById("myNameText").innerText = playerName;
-
-    // टैप तुरंत चालू करने का फ़ंक्शन
-    function handleTap() {
-      const currentConfig = roundConfig[currentRoundIndex];
-
-      if (currentRoundTaps >= currentConfig.limit) {
-        currentRoundIndex = (currentRoundIndex + 1) % roundConfig.length;
-        currentRoundTaps = 0;
-        localStorage.setItem("tap_rnd_idx", currentRoundIndex);
-        localStorage.setItem("tap_rnd_taps", currentRoundTaps);
-        updateRoundUI();
-      }
-
-      currentRoundTaps++;
-      myScore++;
-
-      localStorage.setItem("tap_rnd_taps", currentRoundTaps);
-      localStorage.setItem("tap_cached_score", myScore);
-      document.getElementById("myScoreText").innerText = myScore;
-      updateRoundUI();
-
-      syncScoreToFirebase();
-
-      if (tg?.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('light');
-      }
-    }
-
-    // Firebase सेटअप
-    const firebaseConfig = {
-      apiKey: "AIzaSyAj6VzNnaZo_QV5Jz61Fna8IW9ijNiqiAk",
-      authDomain: "tap-win-game-4d51d.firebaseapp.com",
-      databaseURL: "https://tap-win-game-4d51d-default-rtdb.firebaseio.com",
-      projectId: "tap-win-game-4d51d",
-      storageBucket: "tap-win-game-4d51d.firebasestorage.app",
-      messagingSenderId: "419963240402",
-      appId: "1:419963240402:web:bc00f3ebb1af077480d20b"
-    };
-
+    // --- 7. सुरक्षित Firebase बैकग्राउंड सिंक ---
     let db = null;
-    try {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.database();
-    } catch(e) {
-      console.log("Firebase Init fallback");
-    }
+    let syncTimeout = null;
 
-    function syncScoreToFirebase() {
+    function sendScoreToDB() {
+      const leadScore = document.getElementById("leadFirstScore");
+      if (leadScore) leadScore.innerText = myScore;
+
       if (!db) return;
-      db.ref("global_battle/" + playerId).update({
-        name: playerName,
-        username: telegramUsername,
-        tg_id: telegramId,
-        score: myScore
-      });
+      clearTimeout(syncTimeout);
+      syncTimeout = setTimeout(() => {
+        try {
+          db.ref("global_battle/" + playerId).set({
+            name: playerName,
+            username: telegramUsername,
+            tg_id: telegramId,
+            score: myScore
+          });
+        } catch(e) {}
+      }, 500);
     }
 
-    if (db) {
-      const playerRef = db.ref("global_battle/" + playerId);
-      playerRef.once("value", (snap) => {
-        if (snap.exists()) {
-          const remoteScore = snap.val().score || 0;
-          if (remoteScore > myScore) {
-            myScore = remoteScore;
-            localStorage.setItem("tap_cached_score", myScore);
-            document.getElementById("myScoreText").innerText = myScore;
-          }
-        }
-        syncScoreToFirebase();
-      });
-
-      // लाइव लीडरबोर्ड
-      db.ref("global_battle").orderByChild("score").limitToLast(10).on("value", (snapshot) => {
-        const listDiv = document.getElementById("leaderboardList");
-        listDiv.innerHTML = "";
-
-        const players = [];
-        snapshot.forEach((child) => {
-          players.push({ id: child.key, ...child.val() });
-        });
-
-        players.reverse();
-
-        if (players.length > 0) {
-          const champ = players[0];
-          document.getElementById("wName").innerText = champ.name || "---";
-   
+    // Firebase स्क्रिप्ट लोड करना (बैकग्राउंड में)
+    const script1 = document.createElement("script");
+    script1.
