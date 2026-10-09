@@ -2,205 +2,165 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Daily Tap Win - Progressive Rounds</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tap Win Game - 1v1 Battle</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
-    body { background: #0b0f19; color: #fff; font-family: sans-serif; text-align: center; padding: 14px; overflow: hidden; }
-    .prize { background: #1e293b; padding: 8px 12px; border-radius: 10px; color: #facc15; font-size: 13px; margin-bottom: 10px; border: 1px solid #334155; }
-    .rounds-info { display: flex; justify-content: space-around; background: #111827; padding: 6px; border-radius: 8px; margin-bottom: 10px; font-size: 12px; color: #38bdf8; border: 1px solid #1f2937; }
-    .score-box { font-size: 32px; font-weight: bold; color: #22c55e; margin-bottom: 4px; }
-    .energy-container { width: 85%; max-width: 320px; background: #334155; height: 14px; border-radius: 10px; margin: 0 auto 8px; overflow: hidden; border: 1px solid #475569; }
-    .energy-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #38bdf8, #0284c7); transition: width 0.15s ease; }
-    .energy-text { font-size: 13px; color: #94a3b8; margin-bottom: 6px; font-weight: bold; }
-    .status-msg { font-size: 13px; color: #f59e0b; margin-bottom: 8px; font-weight: bold; min-height: 20px; }
-    .game-zone { width: 100%; height: 230px; position: relative; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-    .coin { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle, #f59e0b, #b45309); border: 5px solid #fde047; display: flex; align-items: center; justify-content: center; font-size: 50px; cursor: pointer; box-shadow: 0 0 25px rgba(245, 158, 11, 0.4); position: absolute; transition: transform 0.1s ease, left 0.2s ease, top 0.2s ease; }
-    .coin:active { transform: scale(0.92); }
-    .coin.disabled { opacity: 0.35; filter: grayscale(1); cursor: not-allowed; }
-    .penalty-flash { animation: flashRed 0.2s ease; }
-    @keyframes flashRed { 0% { background: #450a0a; } 100% { background: #0b0f19; } }
-    .leaderboard { background: #1e293b; border-radius: 10px; padding: 10px 14px; text-align: left; font-size: 13px; border: 1px solid #334155; max-width: 360px; margin: 0 auto; }
-    .leaderboard h3 { color: #facc15; margin-bottom: 6px; font-size: 14px; }
-    .row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #334155; }
-    .warning { color: #ef4444; font-size: 12px; height: 16px; margin-bottom: 4px; }
+    * { box-sizing: border-box; font-family: sans-serif; }
+    body { margin: 0; padding: 20px; text-align: center; background: #121212; color: #fff; }
+    .box { max-width: 400px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 12px; }
+    input { width: 80%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 16px; text-align: center; }
+    button { padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; margin: 8px; }
+    .btn-create { background: #ff9800; color: #000; }
+    .btn-join { background: #2196f3; color: #fff; }
+    .tap-btn { width: 100%; height: 180px; font-size: 32px; background: #4caf50; color: white; border-radius: 16px; margin-top: 15px; }
+    .score-board { display: flex; justify-content: space-around; font-size: 20px; margin: 15px 0; }
+    .score-box { background: #2c2c2c; padding: 10px 20px; border-radius: 8px; }
+    .hidden { display: none; }
   </style>
 </head>
-<body id="bg">
-  <div class="prize">🎁 <b>आज का इनाम: Top 10</b><br>🥇 1st: ₹1000 | 🥈 2nd: ₹500 | 🥉 3rd: ₹250</div>
+<body>
 
-  <div class="rounds-info">
-    <span>🎯 राउंड: <b id="current-round-text">राउंड 1 (500 टैप)</b></span>
-    <span>⏳ ब्रेक: <b>3 घंटे</b></span>
+  <div class="box">
+    <h2>⚡ 1v1 Tap Battle ⚡</h2>
+
+    <!-- रूम स्क्रीन -->
+    <div id="lobby-screen">
+      <input type="text" id="playerName" placeholder="अपना नाम लिखें" value="Player"><br>
+      <button class="btn-create" onclick="createRoom()">कमरा बनाएँ (Create Room)</button>
+      <hr style="border-color:#333; margin: 15px 0;">
+      <input type="text" id="roomInput" placeholder="रूम कोड यहाँ डालें"><br>
+      <button class="btn-join" onclick="joinRoom()">जुड़ें (Join Room)</button>
+    </div>
+
+    <!-- गेम स्क्रीन -->
+    <div id="game-screen" class="hidden">
+      <h3 id="roomDisplay"></h3>
+      <p id="status">सामने वाले प्लेयर का इंतज़ार...</p>
+
+      <div class="score-board">
+        <div class="score-box">
+          <div id="p1Label">P1</div>
+          <b id="p1Score" style="color: #4caf50; font-size: 28px;">0</b>
+        </div>
+        <div class="score-box">
+          <div id="p2Label">P2</div>
+          <b id="p2Score" style="color: #2196f3; font-size: 28px;">0</b>
+        </div>
+      </div>
+
+      <button id="tapBtn" class="tap-btn" onclick="handleTap()" disabled>TAP! TAP!</button>
+    </div>
   </div>
 
-  <div class="score-box">पॉइंट्स: <span id="score">0</span></div>
-  <div class="energy-container"><div class="energy-bar" id="energy-bar"></div></div>
-  <div class="energy-text">⚡ इस राउंड के टैप: <span id="energy">500</span> / <span id="max-energy-text">500</span></div>
-  <div class="status-msg" id="status-msg"></div>
-  <div class="warning" id="warning"></div>
-
-  <div class="game-zone" id="zone">
-    <div class="coin" id="coin">🪙</div>
-  </div>
-
-  <div class="leaderboard">
-    <h3>🏆 लाइव टॉप 10 लीडरबोर्ड</h3>
-    <div class="row"><span>🥇 1. Player_One</span><span>15,000 pts</span></div>
-    <div class="row"><span>🥈 2. Pro_Gamer</span><span>12,400 pts</span></div>
-    <div class="row"><span>🥉 3. Star_Boy</span><span>9,800 pts</span></div>
-    <div class="row"><span>4 से 10. अन्य खिलाड़ी</span><span>~5,000 pts</span></div>
-  </div>
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
   <script>
-    const ROUND_LIMITS = [500, 1500, 2500];
-    const COOLDOWN_HOURS = 3;
-    const COOLDOWN_MS = COOLDOWN_HOURS * 60 * 60 * 1000;
+    const firebaseConfig = {
+      apiKey: "AIzaSyAj6VzNnaZo_QV5Jz61Fna8IW9ijNiqiAk",
+      authDomain: "tap-win-game-4d51d.firebaseapp.com",
+      databaseURL: "https://tap-win-game-4d51d-default-rtdb.firebaseio.com",
+      projectId: "tap-win-game-4d51d",
+      storageBucket: "tap-win-game-4d51d.firebasestorage.app",
+      messagingSenderId: "419963240402",
+      appId: "1:419963240402:web:bc00f3ebb1af077480d20b"
+    };
 
-    const todayDate = new Date().toDateString();
-    let savedDate = localStorage.getItem('last_play_date');
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    if (savedDate !== todayDate) {
-      localStorage.setItem('last_play_date', todayDate);
-      localStorage.setItem('current_round_idx', '0');
-      localStorage.setItem('user_energy', ROUND_LIMITS[0]);
-      localStorage.removeItem('energy_reset_time');
+    let currentRoom = null;
+    let myRole = null; 
+    const WIN_TARGET = 50;
+
+    function createRoom() {
+      const pName = document.getElementById("playerName").value || "Player 1";
+      const roomCode = Math.floor(1000 + Math.random() * 9000).toString();
+      currentRoom = roomCode;
+      myRole = "p1";
+
+      db.ref("rooms/" + roomCode).set({
+        p1: { name: pName, score: 0 },
+        status: "waiting"
+      }).then(() => {
+        openGameScreen(roomCode);
+        listenRoom(roomCode);
+      });
     }
 
-    let score = localStorage.getItem('user_score') ? parseInt(localStorage.getItem('user_score')) : 0;
-    let roundIdx = localStorage.getItem('current_round_idx') ? parseInt(localStorage.getItem('current_round_idx')) : 0;
-    let currentMaxEnergy = ROUND_LIMITS[Math.min(roundIdx, ROUND_LIMITS.length - 1)];
-    let energy = localStorage.getItem('user_energy') !== null ? parseInt(localStorage.getItem('user_energy')) : currentMaxEnergy;
-    let resetTime = localStorage.getItem('energy_reset_time') ? parseInt(localStorage.getItem('energy_reset_time')) : 0;
-    let lastTapTime = 0;
+    function joinRoom() {
+      const code = document.getElementById("roomInput").value.trim();
+      const pName = document.getElementById("playerName").value || "Player 2";
+      if (!code) return alert("कृपया रूम कोड डालें!");
 
-    const scoreEl = document.getElementById('score');
-    const energyEl = document.getElementById('energy');
-    const maxEnergyEl = document.getElementById('max-energy-text');
-    const energyBar = document.getElementById('energy-bar');
-    const statusMsg = document.getElementById('status-msg');
-    const roundTextEl = document.getElementById('current-round-text');
-    const coin = document.getElementById('coin');
-    const zone = document.getElementById('zone');
-    const body = document.getElementById('bg');
-    const warning = document.getElementById('warning');
+      currentRoom = code;
+      myRole = "p2";
 
-    scoreEl.innerText = score;
-
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
+      const roomRef = db.ref("rooms/" + code);
+      roomRef.once("value", (snap) => {
+        if (!snap.exists()) {
+          alert("गलत रूम कोड!");
+          return;
+        }
+        roomRef.update({
+          p2: { name: pName, score: 0 },
+          status: "playing"
+        }).then(() => {
+          openGameScreen(code);
+          listenRoom(code);
+        });
+      });
     }
 
-    function checkGameStatus() {
-      const now = Date.now();
+    function openGameScreen(code) {
+      document.getElementById("lobby-screen").classList.add("hidden");
+      document.getElementById("game-screen").classList.remove("hidden");
+      document.getElementById("roomDisplay").innerText = "रूम कोड: " + code;
+    }
+
+    function listenRoom(code) {
+      db.ref("rooms/" + code).on("value", (snap) => {
+        const data = snap.val();
+        if (!data) return;
+
+        if (data.p1) {
+          document.getElementById("p1Label").innerText = data.p1.name;
+          document.getElementById("p1Score").innerText = data.p1.score || 0;
+        }
+        if (data.p2) {
+          document.getElementById("p2Label").innerText = data.p2.name;
+          document.getElementById("p2Score").innerText = data.p2.score || 0;
+        }
+
+        const tapBtn = document.getElementById("tapBtn");
+        const status = document.getElementById("status");
+
+        if (data.status === "playing") {
+          status.innerText = "मैच शुरू! जल्दी टैप करो (लक्ष्य: " + WIN_TARGET + ")";
+          tapBtn.disabled = false;
+        } else if (data.status === "finished") {
+          status.innerText = "🎉 विजेता: " + data.winner + "!";
+          tapBtn.disabled = true;
+        }
+      });
+    }
+
+    function handleTap() {
+      if (!currentRoom || !myRole) return;
+      const scoreRef = db.ref("rooms/" + currentRoom + "/" + myRole + "/score");
       
-      if (roundIdx >= ROUND_LIMITS.length && energy <= 0) {
-        coin.classList.add('disabled');
-        roundTextEl.innerText = "सभी राउंड पूरे 🎉";
-        statusMsg.innerText = "🛑 आज के सभी 3 राउंड (500, 1500, 2500) पूरे! कल फिर खेलें।";
-        return;
-      }
-
-      currentMaxEnergy = ROUND_LIMITS[roundIdx];
-      roundTextEl.innerText = `राउंड ${roundIdx + 1} (${currentMaxEnergy} टैप)`;
-      maxEnergyEl.innerText = currentMaxEnergy;
-
-      if (energy <= 0) {
-        if (now >= resetTime) {
-          energy = ROUND_LIMITS[roundIdx];
-          resetTime = 0;
-          localStorage.removeItem('energy_reset_time');
-          statusMsg.innerText = "";
-          coin.classList.remove('disabled');
-        } else {
-          coin.classList.add('disabled');
-          const diff = resetTime - now;
-          const hrs = Math.floor(diff / (1000 * 60 * 60));
-          const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-          const secs = Math.floor((diff % (1000 * 60)) / 1000);
-          statusMsg.innerText = `⏳ अगला राउंड (${ROUND_LIMITS[roundIdx]} टैप) शुरू होगा: ${hrs}h ${mins}m ${secs}s बाद`;
+      scoreRef.transaction((score) => {
+        return (score || 0) + 1;
+      }, (error, committed, snapshot) => {
+        if (committed && snapshot.val() >= WIN_TARGET) {
+          const myName = document.getElementById("playerName").value;
+          db.ref("rooms/" + currentRoom).update({
+            status: "finished",
+            winner: myName
+          });
         }
-      } else {
-        statusMsg.innerText = "";
-        coin.classList.remove('disabled');
-      }
-      updateUI();
-    }
-
-    function updateUI() {
-      energyEl.innerText = energy;
-      energyBar.style.width = (energy / currentMaxEnergy * 100) + '%';
-      localStorage.setItem('user_energy', energy);
-      localStorage.setItem('user_score', score);
-      localStorage.setItem('current_round_idx', roundIdx);
-    }
-
-    setInterval(checkGameStatus, 1000);
-    checkGameStatus();
-
-    coin.addEventListener('pointerdown', (e) => {
-      e.stopPropagation();
-      const now = Date.now();
-
-      if (now - lastTapTime < 80) {
-        warning.innerText = "⚠️ बहुत तेज़! चीटिंग की अनुमति नहीं है!";
-        return;
-      }
-      lastTapTime = now;
-      warning.innerText = "";
-
-      if (roundIdx >= ROUND_LIMITS.length && energy <= 0) return;
-      if (energy <= 0) return;
-
-      score++;
-      energy--;
-      scoreEl.innerText = score;
-
-      if (energy === 0) {
-        roundIdx++;
-        localStorage.setItem('current_round_idx', roundIdx);
-        if (roundIdx < ROUND_LIMITS.length) {
-          resetTime = Date.now() + COOLDOWN_MS;
-          localStorage.setItem('energy_reset_time', resetTime);
-        }
-        checkGameStatus();
-      } else {
-        updateUI();
-      }
-
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.impactOccurred('medium');
-      }
-
-      if (score % 6 === 0) {
-        moveCoinRandomly();
-      }
-    });
-
-    zone.addEventListener('pointerdown', () => {
-      if (energy <= 0) return;
-      if (score > 1) {
-        score -= 2;
-        scoreEl.innerText = score;
-        localStorage.setItem('user_score', score);
-      }
-      warning.innerText = "❌ गलत टैप! -2 पॉइंट्स";
-      body.classList.add('penalty-flash');
-      setTimeout(() => body.classList.remove('penalty-flash'), 200);
-      if (window.Telegram?.WebApp?.HapticFeedback) {
-        window.Telegram.WebApp.HapticFeedback.notificationOccurred('error');
-      }
-    });
-
-    function moveCoinRandomly() {
-      const maxX = zone.clientWidth - 150;
-      const maxY = zone.clientHeight - 150;
-      const randX = Math.max(0, Math.floor(Math.random() * maxX));
-      const randY = Math.max(0, Math.floor(Math.random() * maxY));
-      coin.style.left = randX + 'px';
-      coin.style.top = randY + 'px';
+      });
     }
   </script>
 </body>
