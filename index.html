@@ -2,53 +2,193 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tap Win Game - 1v1 Battle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Global Tap Battle</title>
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    * { box-sizing: border-box; font-family: sans-serif; }
-    body { margin: 0; padding: 20px; text-align: center; background: #121212; color: #fff; }
-    .box { max-width: 400px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 12px; }
-    input { width: 80%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #444; background: #2a2a2a; color: #fff; font-size: 16px; text-align: center; }
-    button { padding: 12px 24px; font-size: 16px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; margin: 8px; }
-    .btn-create { background: #ff9800; color: #000; }
-    .btn-join { background: #2196f3; color: #fff; }
-    .tap-btn { width: 100%; height: 180px; font-size: 32px; background: #4caf50; color: white; border-radius: 16px; margin-top: 15px; }
-    .score-board { display: flex; justify-content: space-around; font-size: 20px; margin: 15px 0; }
-    .score-box { background: #2c2c2c; padding: 10px 20px; border-radius: 8px; }
-    .hidden { display: none; }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; padding: 12px; background: #0a0e17; color: #ffffff; text-align: center; overflow-x: hidden; }
+    .container { max-width: 420px; margin: auto; }
+
+    /* शीर्ष हेडर */
+    .header { margin-bottom: 12px; }
+    .header h1 { font-size: 24px; margin: 4px 0; color: #f59e0b; text-transform: uppercase; letter-spacing: 1px; }
+    .header p { font-size: 13px; color: #94a3b8; margin: 0; }
+
+    /* #1 विजेता का गोल्डन बॉक्स */
+    .crown-card {
+      background: linear-gradient(135deg, #78350f 0%, #b45309 50%, #d97706 100%);
+      border: 2px solid #fde047;
+      border-radius: 16px;
+      padding: 14px;
+      margin: 10px 0 15px 0;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+      position: relative;
+    }
+    .crown-tag {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fde047;
+      color: #000;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .crown-card h2 { margin: 6px 0 10px 0; font-size: 17px; color: #fef08a; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .winner-info {
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 1.7;
+      text-align: left;
+    }
+    .winner-info b { color: #fde047; }
+    .winner-score-tag {
+      font-size: 20px;
+      font-weight: 900;
+      color: #4ade80;
+      float: right;
+    }
+
+    /* मेरा स्टेटस कार्ड */
+    .my-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      margin-bottom: 12px;
+    }
+    .my-info { text-align: left; }
+    .my-info .my-name { font-size: 16px; font-weight: bold; color: #38bdf8; }
+    .my-info .my-rank { font-size: 12px; color: #94a3b8; }
+    .my-score-val { font-size: 26px; font-weight: 900; color: #f59e0b; }
+
+    /* बड़ा टैप बटन */
+    .tap-area {
+      position: relative;
+      margin: 15px 0;
+    }
+    .tap-btn {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      border: 6px solid #f97316;
+      background: radial-gradient(circle, #f97316 0%, #dc2626 100%);
+      color: #ffffff;
+      font-size: 26px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(220, 38, 38, 0.5), inset 0 -4px 10px rgba(0,0,0,0.4);
+      outline: none;
+      transition: transform 0.05s ease;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .tap-btn:active {
+      transform: scale(0.92);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+    .tap-btn span { font-size: 12px; font-weight: normal; opacity: 0.85; margin-top: 2px; }
+
+    /* ग्लोबल लीडरबोर्ड */
+    .board-card {
+      background: #111827;
+      border-radius: 14px;
+      padding: 12px;
+      border: 1px solid #1f2937;
+      margin-top: 15px;
+      text-align: left;
+    }
+    .board-card h3 {
+      margin: 0 0 10px 0;
+      font-size: 15px;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #1f2937;
+      padding-bottom: 8px;
+    }
+    .leader-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-bottom: 5px;
+      background: #1a2234;
+      font-size: 14px;
+    }
+    .leader-row.rank-1 {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25) 0%, rgba(26, 34, 52, 1) 100%);
+      border: 1px solid #f59e0b;
+      font-weight: bold;
+    }
+    .leader-left { display: flex; align-items: center; gap: 10px; }
+    .rank-badge { font-weight: bold; width: 25px; text-align: center; }
+    .user-tag { color: #94a3b8; font-size: 11px; }
+    .score-badge { font-weight: 800; color: #4ade80; }
   </style>
 </head>
 <body>
 
-  <div class="box">
-    <h2>⚡ 1v1 Tap Battle ⚡</h2>
-
-    <!-- रूम स्क्रीन -->
-    <div id="lobby-screen">
-      <input type="text" id="playerName" placeholder="अपना नाम लिखें" value="Player"><br>
-      <button class="btn-create" onclick="createRoom()">कमरा बनाएँ (Create Room)</button>
-      <hr style="border-color:#333; margin: 15px 0;">
-      <input type="text" id="roomInput" placeholder="रूम कोड यहाँ डालें"><br>
-      <button class="btn-join" onclick="joinRoom()">जुड़ें (Join Room)</button>
+  <div class="container">
+    <div class="header">
+      <h1>⚡ Global Tap Battle ⚡</h1>
+      <p>1 लाख खिलाड़ियों का महा-मुकाबला</p>
     </div>
 
-    <!-- गेम स्क्रीन -->
-    <div id="game-screen" class="hidden">
-      <h3 id="roomDisplay"></h3>
-      <p id="status">सामने वाले प्लेयर का इंतज़ार...</p>
-
-      <div class="score-board">
-        <div class="score-box">
-          <div id="p1Label">P1</div>
-          <b id="p1Score" style="color: #4caf50; font-size: 28px;">0</b>
-        </div>
-        <div class="score-box">
-          <div id="p2Label">P2</div>
-          <b id="p2Score" style="color: #2196f3; font-size: 28px;">0</b>
+    <!-- 1 नंबर चैंपियन का बॉक्स (सबको दिखेगा) -->
+    <div class="crown-card">
+      <div class="crown-tag">GLOBAL #1 RANK</div>
+      <h2>👑 महा-चैंपियन 👑</h2>
+      <div class="winner-info">
+        <div>👤 <b>नाम:</b> <span id="wName">लोडिंग...</span></div>
+        <div>✈️ <b>Telegram:</b> <span id="wUsername">@...</span></div>
+        <div>🆔 <b>ID:</b> <span id="wUserId">---</span></div>
+        <div style="margin-top: 4px;">
+          <span>🔥 <b>कुल टैप:</b></span>
+          <span class="winner-score-tag" id="wScore">0</span>
         </div>
       </div>
+    </div>
 
-      <button id="tapBtn" class="tap-btn" onclick="handleTap()" disabled>TAP! TAP!</button>
+    <!-- खिलाड़ी का अपना स्कोर और रैंक -->
+    <div class="my-card">
+      <div class="my-info">
+        <div class="my-name" id="myNameText">खिलाड़ी</div>
+        <div class="my-rank">आपकी रैंक: <b id="myRankText" style="color: #38bdf8;">#--</b></div>
+      </div>
+      <div class="my-score-val" id="myScoreText">0</div>
+    </div>
+
+    <!-- टैप बटन -->
+    <div class="tap-area">
+      <button class="tap-btn" onclick="handleTap()">
+        TAP! 🔥
+        <span>दबाते रहो</span>
+      </button>
+    </div>
+
+    <!-- टॉप 10 ग्लोबल लीडरबोर्ड -->
+    <div class="board-card">
+      <h3>
+        <span>🏆 टॉप 10 खिलाड़ी</span>
+        <span style="font-size: 11px; color: #4ade80;">● LIVE UPDATE</span>
+      </h3>
+      <div id="leaderboardList">लोड हो रहा है...</div>
     </div>
   </div>
 
@@ -57,6 +197,12 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
   <script>
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
     const firebaseConfig = {
       apiKey: "AIzaSyAj6VzNnaZo_QV5Jz61Fna8IW9ijNiqiAk",
       authDomain: "tap-win-game-4d51d.firebaseapp.com",
@@ -70,95 +216,100 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let currentRoom = null;
-    let myRole = null; 
-    const WIN_TARGET = 50;
+    // टेलीग्राम यूज़र डाटा ऑटो-डिटेक्ट
+    const tgUser = tg?.initDataUnsafe?.user;
+    const playerId = tgUser ? ("tg_" + tgUser.id) : (localStorage.getItem("tap_uid_v4") || ("user_" + Math.random().toString(36).substr(2, 9)));
+    localStorage.setItem("tap_uid_v4", playerId);
 
-    function createRoom() {
-      const pName = document.getElementById("playerName").value || "Player 1";
-      const roomCode = Math.floor(1000 + Math.random() * 9000).toString();
-      currentRoom = roomCode;
-      myRole = "p1";
+    const playerName = tgUser ? (tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : "")) : (localStorage.getItem("tap_uname") || "खिलाड़ी " + Math.floor(Math.random()*900 + 100));
+    const telegramUsername = tgUser?.username ? ("@" + tgUser.username) : "उपलब्ध नहीं";
+    const telegramId = tgUser?.id ? tgUser.id.toString() : playerId;
 
-      db.ref("rooms/" + roomCode).set({
-        p1: { name: pName, score: 0 },
-        status: "waiting"
-      }).then(() => {
-        openGameScreen(roomCode);
-        listenRoom(roomCode);
-      });
-    }
+    localStorage.setItem("tap_uname", playerName);
+    document.getElementById("myNameText").innerText = playerName;
 
-    function joinRoom() {
-      const code = document.getElementById("roomInput").value.trim();
-      const pName = document.getElementById("playerName").value || "Player 2";
-      if (!code) return alert("कृपया रूम कोड डालें!");
+    let myScore = 0;
 
-      currentRoom = code;
-      myRole = "p2";
+    // डेटाबेस में प्रोफाइल लोड करना
+    const playerRef = db.ref("global_battle/" + playerId);
+    playerRef.once("value", (snap) => {
+      if (snap.exists()) {
+        myScore = snap.val().score || 0;
+        playerRef.update({ name: playerName, username: telegramUsername, tg_id: telegramId });
+      } else {
+        playerRef.set({ name: playerName, username: telegramUsername, tg_id: telegramId, score: 0 });
+      }
+      document.getElementById("myScoreText").innerText = myScore;
+    });
 
-      const roomRef = db.ref("rooms/" + code);
-      roomRef.once("value", (snap) => {
-        if (!snap.exists()) {
-          alert("गलत रूम कोड!");
-          return;
-        }
-        roomRef.update({
-          p2: { name: pName, score: 0 },
-          status: "playing"
-        }).then(() => {
-          openGameScreen(code);
-          listenRoom(code);
-        });
-      });
-    }
+    listenToLeaderboard();
 
-    function openGameScreen(code) {
-      document.getElementById("lobby-screen").classList.add("hidden");
-      document.getElementById("game-screen").classList.remove("hidden");
-      document.getElementById("roomDisplay").innerText = "रूम कोड: " + code;
-    }
-
-    function listenRoom(code) {
-      db.ref("rooms/" + code).on("value", (snap) => {
-        const data = snap.val();
-        if (!data) return;
-
-        if (data.p1) {
-          document.getElementById("p1Label").innerText = data.p1.name;
-          document.getElementById("p1Score").innerText = data.p1.score || 0;
-        }
-        if (data.p2) {
-          document.getElementById("p2Label").innerText = data.p2.name;
-          document.getElementById("p2Score").innerText = data.p2.score || 0;
-        }
-
-        const tapBtn = document.getElementById("tapBtn");
-        const status = document.getElementById("status");
-
-        if (data.status === "playing") {
-          status.innerText = "मैच शुरू! जल्दी टैप करो (लक्ष्य: " + WIN_TARGET + ")";
-          tapBtn.disabled = false;
-        } else if (data.status === "finished") {
-          status.innerText = "🎉 विजेता: " + data.winner + "!";
-          tapBtn.disabled = true;
-        }
-      });
-    }
-
+    // टैप करने पर स्कोर बढ़ाना
     function handleTap() {
-      if (!currentRoom || !myRole) return;
-      const scoreRef = db.ref("rooms/" + currentRoom + "/" + myRole + "/score");
+      myScore++;
+      document.getElementById("myScoreText").innerText = myScore;
       
-      scoreRef.transaction((score) => {
-        return (score || 0) + 1;
-      }, (error, committed, snapshot) => {
-        if (committed && snapshot.val() >= WIN_TARGET) {
-          const myName = document.getElementById("playerName").value;
-          db.ref("rooms/" + currentRoom).update({
-            status: "finished",
-            winner: myName
-          });
+      // Firebase में लाइव अपडेट
+      db.ref("global_battle/" + playerId + "/score").set(myScore);
+
+      if (tg?.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred('light');
+      }
+    }
+
+    // लाइव लीडरबोर्ड और #1 चैंपियन मॉनिटरिंग
+    function listenToLeaderboard() {
+      db.ref("global_battle").orderByChild("score").limitToLast(10).on("value", (snapshot) => {
+        const listDiv = document.getElementById("leaderboardList");
+        listDiv.innerHTML = "";
+
+        const players = [];
+        snapshot.forEach((child) => {
+          players.push({ id: child.key, ...child.val() });
+        });
+
+        players.reverse(); // सबसे बड़ा स्कोर सबसे ऊपर
+
+        // 1 नंबर विजेता का डेटा दिखाना
+        if (players.length > 0) {
+          const champ = players[0];
+          document.getElementById("wName").innerText = champ.name || "---";
+          document.getElementById("wUsername").innerText = champ.username || "---";
+          document.getElementById("wUserId").innerText = champ.tg_id || "---";
+          document.getElementById("wScore").innerText = champ.score || 0;
+        }
+
+        // टॉप 10 सूची तैयार करना
+        let foundMyRank = false;
+        players.forEach((p, index) => {
+          const row = document.createElement("div");
+          row.className = "leader-row" + (index === 0 ? " rank-1" : "");
+          
+          let medal = "#" + (index + 1);
+          if (index === 0) medal = "🥇";
+          else if (index === 1) medal = "🥈";
+          else if (index === 2) medal = "🥉";
+
+          row.innerHTML = `
+            <div class="leader-left">
+              <span class="rank-badge">${medal}</span>
+              <div>
+                <div>${p.name || 'Player'}</div>
+                <div class="user-tag">${p.username || ''}</div>
+              </div>
+            </div>
+            <div class="score-badge">${p.score || 0}</div>
+          `;
+          listDiv.appendChild(row);
+
+          if (p.id === playerId) {
+            document.getElementById("myRankText").innerText = "#" + (index + 1);
+            foundMyRank = true;
+          }
+        });
+
+        if (!foundMyRank) {
+          document.getElementById("myRankText").innerText = "टॉप 10 से बाहर";
         }
       });
     }
