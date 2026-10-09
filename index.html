@@ -41,7 +41,7 @@
     .p-cash { font-size: 13px; font-weight: 900; color: #4ade80; }
     .p-other { font-size: 11px; color: #cbd5e1; display: flex; justify-content: space-between; margin-top: 5px; background: #090d16; padding: 4px 8px; border-radius: 4px; }
 
-    /* स्कोर बोर्ड */
+    /* स्कोर कार्ड */
     .score-box {
       display: flex;
       justify-content: space-between;
@@ -106,7 +106,7 @@
       border: 6px solid #ea580c;
       background: radial-gradient(circle, #f97316 0%, #b91c1c 100%);
       color: #fff;
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 900;
       cursor: pointer;
       outline: none;
@@ -120,11 +120,11 @@
     }
     .tap-main:active { transform: scale(0.92); }
     .tap-main.locked {
-      background: #334155;
-      border-color: #475569;
-      box-shadow: none;
+      background: #334155 !important;
+      border-color: #64748b !important;
+      box-shadow: none !important;
       cursor: not-allowed;
-      opacity: 0.8;
+      opacity: 0.75;
       transform: none !important;
     }
     .tap-sub { font-size: 11px; font-weight: normal; opacity: 0.85; margin-top: 2px; }
@@ -132,9 +132,9 @@
     /* सूचना पट्टी */
     #alertBanner {
       display: none;
-      background: #065f46;
-      color: #a7f3d0;
-      padding: 6px;
+      background: #b91c1c;
+      color: #fef2f2;
+      padding: 7px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: bold;
@@ -149,8 +149,8 @@
 
     <!-- 1. टाइमर -->
     <div class="timer-box">
-      <span>🏆 <b id="rndTitle">राउंड 1 (500 टैप - 2h)</b></span>
-      <span>⏳ शेष समय: <span class="timer-num" id="timeTxt">चालू है</span></span>
+      <span>🏆 <b id="rndTitle">राउंड 1 (500 टैप)</b></span>
+      <span>⏳ शेष समय: <span class="timer-num" id="timeTxt">00:00:00</span></span>
     </div>
 
     <!-- 2. प्राइज़ पूल -->
@@ -183,7 +183,7 @@
     <!-- 3. स्कोर बोर्ड -->
     <div class="score-box">
       <div class="s-left">
-        <div style="font-weight: bold; color: #38bdf8;" id="playerNameTxt">खिलाड़ी</div>
+        <div style="font-weight: bold; color: #38bdf8;">खिलाड़ी</div>
         <div style="color: #94a3b8;">रैंक: <b style="color: #4ade80;">#1 (जीतेगा ₹1,000)</b></div>
       </div>
       <div class="s-score" id="scoreVal">0</div>
@@ -218,25 +218,26 @@
   </div>
 
   <script>
-    // राउंड कॉन्फिगरेशन (500 टैप = 2 घंटे, 1500 टैप = 3 घंटे, 2500 टैप = 3 घंटे)
+    // राउंड नियम (राउंड 1 = 500 टैप / 2h, राउंड 2 = 1500 टैप / 3h, राउंड 3 = 2500 टैप / 3h)
     var rounds = [
-      { limit: 500, waitHours: 2, label: "राउंड 1 (500 टैप - 2h)" },
-      { limit: 1500, waitHours: 3, label: "राउंड 2 (1500 टैप - 3h)" },
-      { limit: 2500, waitHours: 3, label: "राउंड 3 (2500 टैप - 3h)" }
+      { limit: 500, waitMs: 2 * 60 * 60 * 1000, label: "राउंड 1 (500 टैप)" },
+      { limit: 1500, waitMs: 3 * 60 * 60 * 1000, label: "राउंड 2 (1500 टैप)" },
+      { limit: 2500, waitMs: 3 * 60 * 60 * 1000, label: "राउंड 3 (2500 टैप)" }
     ];
 
-    var score = parseInt(localStorage.getItem("g_score") || "0");
-    var roundIdx = parseInt(localStorage.getItem("g_rnd_idx") || "0");
-    var currentTaps = parseInt(localStorage.getItem("g_taps") || "0");
-    var lockUntil = parseInt(localStorage.getItem("g_lock_until") || "0");
-    var adCount = parseInt(localStorage.getItem("g_ads") || "0");
+    // क्लीन स्टेट लोड करना
+    var score = parseInt(localStorage.getItem("fix_score") || "0");
+    var roundIdx = parseInt(localStorage.getItem("fix_rnd") || "0");
+    var roundTaps = parseInt(localStorage.getItem("fix_taps") || "0");
+    var unlockTime = parseInt(localStorage.getItem("fix_unlock") || "0");
+    var adCount = parseInt(localStorage.getItem("fix_ads") || "0");
 
     function saveState() {
-      localStorage.setItem("g_score", score);
-      localStorage.setItem("g_rnd_idx", roundIdx);
-      localStorage.setItem("g_taps", currentTaps);
-      localStorage.setItem("g_lock_until", lockUntil);
-      localStorage.setItem("g_ads", adCount);
+      localStorage.setItem("fix_score", score);
+      localStorage.setItem("fix_rnd", roundIdx);
+      localStorage.setItem("fix_taps", roundTaps);
+      localStorage.setItem("fix_unlock", unlockTime);
+      localStorage.setItem("fix_ads", adCount);
     }
 
     function showAlert(msg) {
@@ -251,7 +252,7 @@
       document.getElementById("rndTitle").innerText = curRound.label;
       document.getElementById("limitCap").innerText = curRound.limit;
       document.getElementById("scoreVal").innerText = score;
-      document.getElementById("progressTxt").innerText = currentTaps + " / " + curRound.limit;
+      document.getElementById("progressTxt").innerText = roundTaps + " / " + curRound.limit;
       document.getElementById("taskBtnTxt").innerText = "📺 ऐड देखें (" + adCount + "/2)";
 
       var btn = document.getElementById("btnTap");
@@ -259,48 +260,40 @@
       var sub = document.getElementById("tapSub");
 
       var now = Date.now();
-      if (now < lockUntil) {
-        // लॉक स्थिति
+      // अगर लॉक का समय चल रहा है
+      if (now < unlockTime) {
         btn.classList.add("locked");
         title.innerText = "LOCKED 🔒";
-        sub.innerText = "समय सीमा चालू है";
+        sub.innerText = "समय पूरा होने तक इंतज़ार करें";
       } else {
-        // अनलॉक स्थिति
         btn.classList.remove("locked");
         title.innerText = "TAP! 🔥";
-        sub.innerText = (currentTaps >= curRound.limit) ? "राउंड पूरा!" : "दबाते रहो";
+        sub.innerText = "दबाते रहो";
       }
     }
 
-    // टैप करने का फ़ंक्शन
+    // टैप फंक्शन (सख्त लॉक नियम के साथ)
     function addTap() {
       var now = Date.now();
       var curRound = rounds[roundIdx];
 
-      // अगर टाइमर लॉक चल रहा है तो टैप नहीं होगा
-      if (now < lockUntil) {
-        showAlert("⏳ राउंड लिमिट पूरी है! कृपया टाइमर खत्म होने तक इंतज़ार करें।");
+      // 1. अगर लॉक का समय बाकी है, तो टैप बिल्कुल नहीं होगा
+      if (now < unlockTime) {
+        showAlert("⏳ राउंड लॉक है! कृपया ऊपर दिए गए टाइमर के खत्म होने का इंतज़ार करें।");
         return;
       }
 
-      // अगर 500 टैप अभी पूरे हुए हैं तो 2 घंटे का लॉक लगाएँ
-      if (currentTaps >= curRound.limit) {
-        // नया लॉक टाइमर सेट करें
-        lockUntil = Date.now() + (curRound.waitHours * 60 * 60 * 1000);
+      // 2. टैप बढ़ाएँ
+      score++;
+      roundTaps++;
+
+      // 3. जैसे ही लिमिट पूरी हुई, तुरंत लॉक लगाएं
+      if (roundTaps >= curRound.limit) {
+        unlockTime = Date.now() + curRound.waitMs; // राउंड 1 के लिए पूरे 2 घंटे (7200000 ms)
         saveState();
         updateDisplay();
-        showAlert("🛑 लिमिट पूरी! " + curRound.waitHours + " घंटे का टाइमर शुरू हो गया है।");
+        showAlert("🛑 " + curRound.limit + " टैप पूरे! अब 2 घंटे का लॉक शुरू हो गया है।");
         return;
-      }
-
-      // टैप बढ़ाएँ
-      score++;
-      currentTaps++;
-
-      // चेक करें कि क्या इस टैप से लिमिट पूरी हो गई
-      if (currentTaps >= curRound.limit) {
-        lockUntil = Date.now() + (curRound.waitHours * 60 * 60 * 1000);
-        showAlert("🎉 " + curRound.limit + " टैप पूरे! अब " + curRound.waitHours + " घंटे बाद अगला राउंड खुलेगा।");
       }
 
       saveState();
@@ -326,30 +319,30 @@
       window.open(url, '_blank');
     }
 
-    // असली 2 घंटे का काउंटडाउन टाइमर
+    // टाइमर लूप जो हर सेकंड चेक करेगा
     function timerLoop() {
       var now = Date.now();
       var timeBox = document.getElementById("timeTxt");
 
-      if (now < lockUntil) {
-        var diff = Math.floor((lockUntil - now) / 1000);
+      if (now < unlockTime) {
+        var diff = Math.floor((unlockTime - now) / 1000);
         var h = Math.floor(diff / 3600);
         var m = Math.floor((diff % 3600) / 60);
         var s = diff % 60;
         var pad = function(n) { return (n < 10 ? "0" : "") + n; };
         timeBox.innerText = pad(h) + ":" + pad(m) + ":" + pad(s);
       } else {
-        // अगर लॉक खत्म हो गया है और लिमिट पहले पूरी हो चुकी थी तो अगला राउंड खोलें
+        // समय खत्म हुआ तो अगला राउंड अनलॉक करें
         var curRound = rounds[roundIdx];
-        if (currentTaps >= curRound.limit) {
+        if (roundTaps >= curRound.limit && unlockTime > 0) {
           roundIdx = (roundIdx + 1) % rounds.length;
-          currentTaps = 0;
-          lockUntil = 0;
+          roundTaps = 0;
+          unlockTime = 0;
           saveState();
-          updateDisplay();
-          showAlert("🔓 नया राउंड अनलॉक हो गया! खेल शुरू करें।");
+          showAlert("🔓 समय पूरा हुआ! नया राउंड अनलॉक हो गया है।");
         }
-        timeBox.innerText = "00:00:00 (अनलॉक)";
+        timeBox.innerText = "अनलॉक है";
+        updateDisplay();
       }
     }
 
@@ -358,4 +351,5 @@
     timerLoop();
   </script>
 </body>
-</html>
+          </html>
+          
