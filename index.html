@@ -14,6 +14,7 @@
     .timer-box {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       background: #111827;
       border: 1px solid #1f2937;
       padding: 8px 12px;
@@ -21,7 +22,7 @@
       font-size: 13px;
       margin-bottom: 8px;
     }
-    .timer-num { color: #ef4444; font-weight: 900; font-size: 15px; }
+    .timer-num { color: #ef4444; font-weight: 900; font-size: 15px; font-variant-numeric: tabular-nums; }
 
     /* प्राइज़ पूल */
     .prize-card {
@@ -40,7 +41,7 @@
     .p-cash { font-size: 13px; font-weight: 900; color: #4ade80; }
     .p-other { font-size: 11px; color: #cbd5e1; display: flex; justify-content: space-between; margin-top: 5px; background: #090d16; padding: 4px 8px; border-radius: 4px; }
 
-    /* स्कोर कार्ड */
+    /* स्कोर बोर्ड */
     .score-box {
       display: flex;
       justify-content: space-between;
@@ -53,7 +54,7 @@
     .s-left { text-align: left; font-size: 12px; }
     .s-score { font-size: 26px; font-weight: 900; color: #f59e0b; }
 
-    /* लिमिट प्रोग्रेस */
+    /* सीमा प्रोग्रेस */
     .limit-box {
       display: flex;
       justify-content: space-between;
@@ -115,8 +116,17 @@
       align-items: center;
       justify-content: center;
       margin: auto;
+      transition: all 0.2s ease;
     }
     .tap-main:active { transform: scale(0.92); }
+    .tap-main.locked {
+      background: #334155;
+      border-color: #475569;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 0.8;
+      transform: none !important;
+    }
     .tap-sub { font-size: 11px; font-weight: normal; opacity: 0.85; margin-top: 2px; }
 
     /* सूचना पट्टी */
@@ -139,8 +149,8 @@
 
     <!-- 1. टाइमर -->
     <div class="timer-box">
-      <span>🏆 <b id="rndTitle">राउंड 1 (500 टैप)</b></span>
-      <span>⏳ शेष समय: <span class="timer-num" id="timeTxt">02:00:00</span></span>
+      <span>🏆 <b id="rndTitle">राउंड 1 (500 टैप - 2h)</b></span>
+      <span>⏳ शेष समय: <span class="timer-num" id="timeTxt">चालू है</span></span>
     </div>
 
     <!-- 2. प्राइज़ पूल -->
@@ -201,76 +211,151 @@
     <!-- 7. मुख्य टैप बटन -->
     <div class="tap-wrap">
       <button class="tap-main" id="btnTap" onclick="addTap()">
-        TAP! 🔥
+        <span id="tapMainTitle">TAP! 🔥</span>
         <span class="tap-sub" id="tapSub">दबाते रहो</span>
       </button>
     </div>
   </div>
 
   <script>
-    // बिल्कुल सीधा, बिना किसी रुकावट वाला शुद्ध कोड
-    var score = 0;
-    var currentTaps = 0;
-    var maxLimit = 500;
-    var adCount = 0;
+    // राउंड कॉन्फिगरेशन (500 टैप = 2 घंटे, 1500 टैप = 3 घंटे, 2500 टैप = 3 घंटे)
+    var rounds = [
+      { limit: 500, waitHours: 2, label: "राउंड 1 (500 टैप - 2h)" },
+      { limit: 1500, waitHours: 3, label: "राउंड 2 (1500 टैप - 3h)" },
+      { limit: 2500, waitHours: 3, label: "राउंड 3 (2500 टैप - 3h)" }
+    ];
 
-    // स्कोर बढ़ाना
-    function addTap() {
-      score++;
-      currentTaps++;
+    var score = parseInt(localStorage.getItem("g_score") || "0");
+    var roundIdx = parseInt(localStorage.getItem("g_rnd_idx") || "0");
+    var currentTaps = parseInt(localStorage.getItem("g_taps") || "0");
+    var lockUntil = parseInt(localStorage.getItem("g_lock_until") || "0");
+    var adCount = parseInt(localStorage.getItem("g_ads") || "0");
 
-      if (currentTaps > maxLimit) {
-        if (maxLimit === 500) { maxLimit = 1500; document.getElementById("rndTitle").innerText = "राउंड 2 (1500 टैप)"; }
-        else if (maxLimit === 1500) { maxLimit = 2500; document.getElementById("rndTitle").innerText = "राउंड 3 (2500 टैप)"; }
-        else { maxLimit = 500; currentTaps = 1; document.getElementById("rndTitle").innerText = "राउंड 1 (500 टैप)"; }
-        document.getElementById("limitCap").innerText = maxLimit;
-      }
-
-      document.getElementById("scoreVal").innerText = score;
-      document.getElementById("progressTxt").innerText = currentTaps + " / " + maxLimit;
-    }
-
-    // ऐड टास्क
-    function doTask() {
-      adCount++;
-      if (adCount >= 2) {
-        score += 500;
-        adCount = 0;
-        document.getElementById("scoreVal").innerText = score;
-        showAlert("🎉 बधाई! +500 बोनस टैप्स मिल गए!");
-      } else {
-        showAlert("👍 1 ऐड दर्ज हुआ! 1 और देखें।");
-      }
-      document.getElementById("taskBtnTxt").innerText = "📺 ऐड देखें (" + adCount + "/2)";
+    function saveState() {
+      localStorage.setItem("g_score", score);
+      localStorage.setItem("g_rnd_idx", roundIdx);
+      localStorage.setItem("g_taps", currentTaps);
+      localStorage.setItem("g_lock_until", lockUntil);
+      localStorage.setItem("g_ads", adCount);
     }
 
     function showAlert(msg) {
       var b = document.getElementById("alertBanner");
       b.innerText = msg;
       b.style.display = "block";
-      setTimeout(function() { b.style.display = "none"; }, 2500);
+      setTimeout(function() { b.style.display = "none"; }, 3000);
     }
 
-    // शेयर करना
+    function updateDisplay() {
+      var curRound = rounds[roundIdx];
+      document.getElementById("rndTitle").innerText = curRound.label;
+      document.getElementById("limitCap").innerText = curRound.limit;
+      document.getElementById("scoreVal").innerText = score;
+      document.getElementById("progressTxt").innerText = currentTaps + " / " + curRound.limit;
+      document.getElementById("taskBtnTxt").innerText = "📺 ऐड देखें (" + adCount + "/2)";
+
+      var btn = document.getElementById("btnTap");
+      var title = document.getElementById("tapMainTitle");
+      var sub = document.getElementById("tapSub");
+
+      var now = Date.now();
+      if (now < lockUntil) {
+        // लॉक स्थिति
+        btn.classList.add("locked");
+        title.innerText = "LOCKED 🔒";
+        sub.innerText = "समय सीमा चालू है";
+      } else {
+        // अनलॉक स्थिति
+        btn.classList.remove("locked");
+        title.innerText = "TAP! 🔥";
+        sub.innerText = (currentTaps >= curRound.limit) ? "राउंड पूरा!" : "दबाते रहो";
+      }
+    }
+
+    // टैप करने का फ़ंक्शन
+    function addTap() {
+      var now = Date.now();
+      var curRound = rounds[roundIdx];
+
+      // अगर टाइमर लॉक चल रहा है तो टैप नहीं होगा
+      if (now < lockUntil) {
+        showAlert("⏳ राउंड लिमिट पूरी है! कृपया टाइमर खत्म होने तक इंतज़ार करें।");
+        return;
+      }
+
+      // अगर 500 टैप अभी पूरे हुए हैं तो 2 घंटे का लॉक लगाएँ
+      if (currentTaps >= curRound.limit) {
+        // नया लॉक टाइमर सेट करें
+        lockUntil = Date.now() + (curRound.waitHours * 60 * 60 * 1000);
+        saveState();
+        updateDisplay();
+        showAlert("🛑 लिमिट पूरी! " + curRound.waitHours + " घंटे का टाइमर शुरू हो गया है।");
+        return;
+      }
+
+      // टैप बढ़ाएँ
+      score++;
+      currentTaps++;
+
+      // चेक करें कि क्या इस टैप से लिमिट पूरी हो गई
+      if (currentTaps >= curRound.limit) {
+        lockUntil = Date.now() + (curRound.waitHours * 60 * 60 * 1000);
+        showAlert("🎉 " + curRound.limit + " टैप पूरे! अब " + curRound.waitHours + " घंटे बाद अगला राउंड खुलेगा।");
+      }
+
+      saveState();
+      updateDisplay();
+    }
+
+    // ऐड टास्क फ़ंक्शन
+    function doTask() {
+      adCount++;
+      if (adCount >= 2) {
+        score += 500;
+        adCount = 0;
+        showAlert("🎉 बधाई! +500 बोनस टैप्स मिल गए!");
+      } else {
+        showAlert("👍 1 ऐड दर्ज हुआ! 1 और देखें।");
+      }
+      saveState();
+      updateDisplay();
+    }
+
     function shareGame() {
       var url = "https://t.me/share/url?url=" + encodeURIComponent("https://t.me/asif_s0_bot/play") + "&text=" + encodeURIComponent("🔥 Tap Battle खेलो और ₹1,000 जीतो! अभी खेलो 👇");
       window.open(url, '_blank');
     }
 
-    // टाइमर
-    var totalSeconds = 7200; // 2 घंटे
-    function tickTimer() {
-      if (totalSeconds > 0) {
-        totalSeconds--;
-        var h = Math.floor(totalSeconds / 3600);
-        var m = Math.floor((totalSeconds % 3600) / 60);
-        var s = totalSeconds % 60;
+    // असली 2 घंटे का काउंटडाउन टाइमर
+    function timerLoop() {
+      var now = Date.now();
+      var timeBox = document.getElementById("timeTxt");
+
+      if (now < lockUntil) {
+        var diff = Math.floor((lockUntil - now) / 1000);
+        var h = Math.floor(diff / 3600);
+        var m = Math.floor((diff % 3600) / 60);
+        var s = diff % 60;
         var pad = function(n) { return (n < 10 ? "0" : "") + n; };
-        document.getElementById("timeTxt").innerText = pad(h) + ":" + pad(m) + ":" + pad(s);
+        timeBox.innerText = pad(h) + ":" + pad(m) + ":" + pad(s);
+      } else {
+        // अगर लॉक खत्म हो गया है और लिमिट पहले पूरी हो चुकी थी तो अगला राउंड खोलें
+        var curRound = rounds[roundIdx];
+        if (currentTaps >= curRound.limit) {
+          roundIdx = (roundIdx + 1) % rounds.length;
+          currentTaps = 0;
+          lockUntil = 0;
+          saveState();
+          updateDisplay();
+          showAlert("🔓 नया राउंड अनलॉक हो गया! खेल शुरू करें।");
+        }
+        timeBox.innerText = "00:00:00 (अनलॉक)";
       }
     }
-    setInterval(tickTimer, 1000);
-    tickTimer();
+
+    updateDisplay();
+    setInterval(timerLoop, 1000);
+    timerLoop();
   </script>
 </body>
 </html>
