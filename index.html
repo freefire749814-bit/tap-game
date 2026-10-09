@@ -31,7 +31,7 @@
     }
     .timer-val { color: #ef4444; font-weight: 800; font-size: 14px; font-variant-numeric: tabular-nums; }
 
-    /* प्राइज़ पूल ग्रिड (1 से 10 तक) */
+    /* प्राइज़ पूल ग्रिड */
     .prize-pool {
       background: linear-gradient(180deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
       border: 1px solid #334155;
@@ -118,13 +118,26 @@
       margin-bottom: 8px;
     }
 
+    /* सूचना पट्टी */
+    #noticeBox {
+      display: none;
+      background: #065f46;
+      color: #d1fae5;
+      border: 1px solid #10b981;
+      padding: 7px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
     /* 📺 रिवॉर्ड टास्क कार्ड */
     .task-card {
       background: #131d31;
       border: 1px solid #3b82f6;
       border-radius: 10px;
       padding: 8px 12px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       text-align: left;
     }
     .task-header {
@@ -151,6 +164,26 @@
     }
     .ad-booster-btn:active { transform: scale(0.97); }
     .ad-bonus-badge { background: #fde047; color: #000; padding: 2px 7px; border-radius: 5px; font-size: 11px; font-weight: 900; }
+
+    /* 👥 दोस्तों को शेयर करने का बटन */
+    .share-btn {
+      width: 100%;
+      background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+      border: none;
+      color: #ffffff;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+    .share-btn:active { transform: scale(0.97); }
 
     /* टैप बटन */
     .tap-area { margin: 4px 0 10px 0; }
@@ -208,13 +241,13 @@
       <h1>⚡ GLOBAL TAP TOURNAMENT ⚡</h1>
     </div>
 
-    <!-- टाइमर बार (राउंड टाइम लिमिट) -->
+    <!-- टाइमर बार -->
     <div class="timer-bar">
-      <span>🏆 <b id="roundLabelText">राउंड 1 (2h लिमिट)</b></span>
+      <span>🏆 <b id="roundLabelText">राउंड 1 (500 टैप - 2h)</b></span>
       <span>⏳ शेष समय: <span class="timer-val" id="timerDisplay">01:59:59</span></span>
     </div>
 
-    <!-- प्राइज़ पूल कार्ड (Rank 1 से 10 तक का पूरा विवरण) -->
+    <!-- प्राइज़ पूल ग्रिड (1 से 10 तक) -->
     <div class="prize-pool">
       <div class="prize-title">
         <span>🎁 टूर्नामेंट प्राइज़ पूल</span>
@@ -265,23 +298,31 @@
       <div class="my-score-val" id="myScoreText">0</div>
     </div>
 
-    <!-- राउंड और टैप सीमा (500 -> 1500 -> 2500) -->
+    <!-- राउंड और टैप सीमा -->
     <div class="progress-box">
       <span>🎯 राउंड: <b id="currentRoundLevel" style="color: #38bdf8;">500 टैप</b></span>
       <span>टैप प्रगति: <b id="roundTapDisplay" style="color: #fde047;">0 / 500</b></span>
     </div>
 
-    <!-- 📺 रिवॉर्ड टास्क बॉक्स (2 Ads = 500, 1 Ad = 100, 2 Ads = 1000) -->
+    <!-- सूचना पट्टी -->
+    <div id="noticeBox"></div>
+
+    <!-- 📺 रिवॉर्ड टास्क कार्ड -->
     <div class="task-card">
       <div class="task-header">
         <span>🎁 रिवॉर्ड टास्क</span>
         <span id="taskProgressText" style="color: #fde047;">प्रगति: 0/2 Ads</span>
       </div>
-      <button class="ad-booster-btn" onclick="handleAdTaskClick()">
+      <button class="ad-booster-btn" id="adActionBtn" onclick="handleAdTaskClick()">
         <span id="adButtonTitle">📺 ऐड देखें और बोनस लें</span>
         <span class="ad-bonus-badge" id="adBonusBadge">+500 TAPS</span>
       </button>
     </div>
+
+    <!-- 👥 दोस्तों को शेयर करने का बटन -->
+    <button class="share-btn" onclick="shareGameWithFriends()">
+      <span>🚀 दोस्तों को शेयर करें (Invite Friends)</span>
+    </button>
 
     <!-- बड़ा टैप बटन -->
     <div class="tap-area">
@@ -312,7 +353,27 @@
       tg.expand();
     }
 
-    // --- 1. राउंड और समय सीमा (500: 2h, 1500: 3h, 2500: 3h) ---
+    function showNotice(msg) {
+      const box = document.getElementById("noticeBox");
+      box.innerText = msg;
+      box.style.display = "block";
+      setTimeout(() => { box.style.display = "none"; }, 3500);
+    }
+
+    // --- दोस्तों को शेयर करने का फंक्शन ---
+    function shareGameWithFriends() {
+      const shareUrl = "https://t.me/asif_s0_bot/play";
+      const shareText = "🔥 Tap Battle खेलो और ₹1,000 तक जीतो! अभी मेरे साथ मुकाबला करो 👇";
+      const fullTelegramShareLink = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+
+      if (tg?.openTelegramLink) {
+        tg.openTelegramLink(fullTelegramShareLink);
+      } else {
+        window.open(fullTelegramShareLink, '_blank');
+      }
+    }
+
+    // राउंड नियम (500: 2h, 1500: 3h, 2500: 3h)
     const roundConfig = [
       { limit: 500, durationHours: 2, label: "राउंड 1 (500 टैप - 2h)" },
       { limit: 1500, durationHours: 3, label: "राउंड 2 (1500 टैप - 3h)" },
@@ -322,11 +383,11 @@
     let currentRoundIndex = parseInt(localStorage.getItem("tap_rnd_idx") || "0");
     let currentRoundTaps = parseInt(localStorage.getItem("tap_rnd_taps") || "0");
 
-    // --- 2. रिवॉर्ड टास्क कॉन्फ़िग (2 Ads -> +500, 1 Ad -> +100, 2 Ads -> +1000) ---
+    // टास्क नियम (2 Ads = 500, 1 Ad = 100, 2 Ads = 1000)
     const rewardTasks = [
-      { requiredAds: 2, bonus: 500, title: "2 ऐड्स देखें = +500 Taps" },
-      { requiredAds: 1, bonus: 100, title: "1 ऐड देखें = +100 Taps" },
-      { requiredAds: 2, bonus: 1000, title: "2 ऐड्स देखें = +1000 Taps" }
+      { requiredAds: 2, bonus: 500, title: "2 ऐड्स = +500 Taps" },
+      { requiredAds: 1, bonus: 100, title: "1 ऐड = +100 Taps" },
+      { requiredAds: 2, bonus: 1000, title: "2 ऐड्स = +1000 Taps" }
     ];
 
     let taskIndex = parseInt(localStorage.getItem("task_idx") || "0");
@@ -357,38 +418,41 @@
       }
     }
 
-    // --- 3. AdsGram ऐड सिस्टम ---
-    const AdController = window.Adsgram?.init({ blockId: "int-6904" });
-
     function handleAdTaskClick() {
-      if (AdController) {
-        AdController.show().then(() => {
-          registerAdWatch();
-        }).catch(() => {
-          registerAdWatch(); // डेमो मोड के लिए
-        });
-      } else {
-        registerAdWatch();
+      const btn = document.getElementById("adActionBtn");
+      btn.style.opacity = "0.7";
+
+      try {
+        if (window.Adsgram) {
+          const AdController = window.Adsgram.init({ blockId: "int-6904" });
+          AdController.show()
+            .then(() => { completeAdStep(); })
+            .catch(() => { completeAdStep(); });
+        } else {
+          completeAdStep();
+        }
+      } catch (err) {
+        completeAdStep();
+      } finally {
+        setTimeout(() => { btn.style.opacity = "1"; }, 500);
       }
     }
 
-    function registerAdWatch() {
+    function completeAdStep() {
       adsWatchedInCurrentTask++;
       const currentTask = rewardTasks[taskIndex];
 
       if (adsWatchedInCurrentTask >= currentTask.requiredAds) {
-        // टास्क पूरा हुआ, रिवॉर्ड दें
         myScore += currentTask.bonus;
         document.getElementById("myScoreText").innerText = myScore;
         db.ref("global_battle/" + playerId + "/score").set(myScore);
 
-        alert(`🎉 टास्क पूरा! आपको मिले +${currentTask.bonus} बोनस टैप!`);
+        showNotice(`🎉 बधाई! टास्क पूरा: +${currentTask.bonus} टैप मिले!`);
 
-        // अगले टास्क पर जाएँ
         taskIndex = (taskIndex + 1) % rewardTasks.length;
         adsWatchedInCurrentTask = 0;
       } else {
-        alert(`👍 1 ऐड देख लिया! 1 और ऐड देखने पर रिवॉर्ड मिलेगा (${adsWatchedInCurrentTask}/${currentTask.requiredAds})`);
+        showNotice(`👍 ऐड दर्ज हुआ! 1 और देखें (${adsWatchedInCurrentTask}/${currentTask.requiredAds})`);
       }
 
       localStorage.setItem("task_idx", taskIndex);
@@ -396,7 +460,6 @@
       updateTaskUI();
     }
 
-    // --- 4. टाइमर सिस्टम ---
     function runTimer() {
       function tick() {
         const round = roundConfig[currentRoundIndex];
@@ -413,7 +476,6 @@
     }
     runTimer();
 
-    // --- 5. प्राइज़ लिस्ट (1 से 10 तक का सटीक वितरण) ---
     function getPrize(rank) {
       if (rank === 1) return "₹1,000";
       if (rank === 2) return "₹500";
@@ -424,7 +486,7 @@
       return "₹0";
     }
 
-    // --- 6. Firebase कॉन्फ़िगरेशन ---
+    // Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAj6VzNnaZo_QV5Jz61Fna8IW9ijNiqiAk",
       authDomain: "tap-win-game-4d51d.firebaseapp.com",
@@ -438,10 +500,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // --- 7. खिलाड़ी पहचान ---
     const tgUser = tg?.initDataUnsafe?.user;
-    const playerId = tgUser ? ("tg_" + tgUser.id) : (localStorage.getItem("tap_uid_v9") || ("user_" + Math.random().toString(36).substr(2, 9)));
-    localStorage.setItem("tap_uid_v9", playerId);
+    const playerId = tgUser ? ("tg_" + tgUser.id) : (localStorage.getItem("tap_uid_v11") || ("user_" + Math.random().toString(36).substr(2, 9)));
+    localStorage.setItem("tap_uid_v11", playerId);
 
     const playerName = tgUser ? (tgUser.first_name + (tgUser.last_name ? " " + tgUser.last_name : "")) : (localStorage.getItem("tap_uname") || "खिलाड़ी " + Math.floor(Math.random()*900 + 100));
     const telegramUsername = tgUser?.username ? ("@" + tgUser.username) : "उपलब्ध नहीं";
@@ -452,7 +513,6 @@
 
     let myScore = 0;
 
-    // डेटाबेस से स्कोर लोड करना
     const playerRef = db.ref("global_battle/" + playerId);
     playerRef.once("value", (snap) => {
       if (snap.exists()) {
@@ -468,12 +528,10 @@
 
     listenToLeaderboard();
 
-    // --- 8. टैप एक्शन ---
     function handleTap() {
       const currentConfig = roundConfig[currentRoundIndex];
 
       if (currentRoundTaps >= currentConfig.limit) {
-        // राउंड पूरा होने पर अगले राउंड (500 -> 1500 -> 2500) पर जाएँ
         currentRoundIndex = (currentRoundIndex + 1) % roundConfig.length;
         currentRoundTaps = 0;
         localStorage.setItem("tap_rnd_idx", currentRoundIndex);
@@ -495,7 +553,6 @@
       }
     }
 
-    // --- 9. लीडरबोर्ड लिसनर ---
     function listenToLeaderboard() {
       db.ref("global_battle").orderByChild("score").limitToLast(10).on("value", (snapshot) => {
         const listDiv = document.getElementById("leaderboardList");
@@ -506,42 +563,4 @@
           players.push({ id: child.key, ...child.val() });
         });
 
-        players.reverse();
-
-        if (players.length > 0) {
-          const champ = players[0];
-          document.getElementById("wName").innerText = champ.name || "---";
-          document.getElementById("wUsername").innerText = champ.username || "---";
-          document.getElementById("wUserId").innerText = champ.tg_id || "---";
-          document.getElementById("wScore").innerText = champ.score || 0;
-        }
-
-        let foundRank = false;
-        players.forEach((p, index) => {
-          const rank = index + 1;
-          const prize = getPrize(rank);
-          const row = document.createElement("div");
-          row.className = "leader-row" + (rank === 1 ? " rank-1" : "");
-
-          let medal = "#" + rank;
-          if (rank === 1) medal = "🥇";
-          else if (rank === 2) medal = "🥈";
-          else if (rank === 3) medal = "🥉";
-
-          row.innerHTML = `
-            <div class="leader-left">
-              <span class="rank-num">${medal}</span>
-              <div>
-                <div>${p.name || 'Player'}</div>
-                <div class="user-sub">${p.username || ''}</div>
-              </div>
-            </div>
-            <div class="row-right">
-              <span class="prize-chip">${prize}</span>
-              <span class="score-txt">${p.score || 0}</span>
-            </div>
-          `;
-          listDiv.appendChild(row);
-
-          if (p.id === playerId) {
-            document.getElementById("myRankTex
+     
