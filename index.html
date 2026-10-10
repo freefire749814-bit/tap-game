@@ -46,7 +46,7 @@
     .time-danger { color: #ef4444 !important; animation: blink 0.6s infinite alternate; }
     @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
 
-    /* 5 Seasons Advance - Hidden for normal user */
+    /* 5 Seasons Advance - Admin Only */
     .adv-box { display: none; border: 1px solid #3b82f6; background: rgba(30, 58, 138, 0.2); border-radius: 10px; padding: 8px; margin-bottom: 10px; }
     .adv-head { font-size: 11px; font-weight: 700; color: #60a5fa; margin-bottom: 6px; }
     .adv-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
@@ -117,7 +117,7 @@
     <input type="text" id="authPhone" placeholder="मोबाइल नंबर (उदा. 9876543210)">
     <input type="password" id="authPass" placeholder="पासवर्ड">
     <button class="act-btn" style="background:#2563eb;width:100%;padding:10px;margin-top:6px;" id="authSubmitBtn" onclick="handleAuth()">प्रवेश करें</button>
-    <div style="font-size:10px;color:#64748b;margin-top:8px;" id="authHint">नया अकाउंट बनाने के लिए रजिस्टर चुनें।</div>
+    <div style="font-size:10px;color:#64748b;margin-top:8px;">नया अकाउंट बनाने के लिए रजिस्टर चुनें।</div>
   </div>
 </div>
 
@@ -314,8 +314,8 @@
   /* --- AUTH / LOGIN SYSTEM --- */
   var authMode = 'login';
   var currentUser = null;
-  var ADMIN_NUMBER = '7867867860'; // आपका एडमिन लॉगिन नंबर
-  var ADMIN_PASS = 'admin786';      // आपका एडमिन पासवर्ड
+  var ADMIN_NUMBER = '7867867860';
+  var ADMIN_PASS = 'admin786';
 
   function setAuthMode(mode) {
     authMode = mode;
@@ -329,7 +329,6 @@
     var pass = document.getElementById('authPass').value.trim();
     if(!phone || !pass) { alert('मोबाइल नंबर और पासवर्ड भरें!'); return; }
 
-    // Admin Login Check
     if(phone === ADMIN_NUMBER && pass === ADMIN_PASS) {
       loginSuccess({ phone: phone, uid: 'ADMIN_01', bal: 5000, isAdmin: true });
       return;
@@ -342,8 +341,340 @@
       var uid = 'UID' + Math.floor(100000 + Math.random() * 900000);
       users[phone] = { phone: phone, pass: pass, uid: uid, bal: 500, isAdmin: false };
       localStorage.setItem('wg_users', JSON.stringify(users));
-      alert('रजिस्ट्रेशन सफल! आपको ₹500 वेलकम बोनस मिला।');
+      alert('रजिस्ट्रेशन सफल! आपको ₹500 बोनस मिला।');
       loginSuccess(users[phone]);
     } else {
       if(!users[phone] || users[phone].pass !== pass) { alert('गलत मोबाइल नंबर या पासवर्ड!'); return; }
-      loginSuccess(users[p
+      loginSuccess(users[phone]);
+    }
+  }
+
+  function loginSuccess(user) {
+    currentUser = user;
+    sessionStorage.setItem('wg_cur
+    sessionStorage.setItem('wg_current_user', JSON.stringify(user));
+    document.getElementById('authOverlay').style.display = 'none';
+    document.getElementById('userBadge').innerText = user.isAdmin ? '👑 ADMIN • OWNER' : user.uid + ' • VIP 1';
+    bal = user.bal;
+    document.getElementById('bal').innerText = bal.toFixed(2);
+
+    if(user.isAdmin) {
+      document.getElementById('advContainer').style.display = 'block';
+      document.getElementById('adminControlBox').style.display = 'block';
+    } else {
+      document.getElementById('advContainer').style.display = 'none';
+      document.getElementById('adminControlBox').style.display = 'none';
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem('wg_current_user');
+    location.reload();
+  }
+
+  function syncUserBalance() {
+    if(!currentUser) return;
+    currentUser.bal = bal;
+    sessionStorage.setItem('wg_current_user', JSON.stringify(currentUser));
+    if(!currentUser.isAdmin) {
+      var users = JSON.parse(localStorage.getItem('wg_users') || '{}');
+      if(users[currentUser.phone]) {
+        users[currentUser.phone].bal = bal;
+        localStorage.setItem('wg_users', JSON.stringify(users));
+      }
+    }
+  }
+
+  /* --- GAME LOGIC --- */
+  var bal = 0, sec = 30, seq = 1350, multiplier = 1, currentLang = 'hi', soundOn = true;
+  var queue = [], myBets = [], walletLogs = [];
+
+  function openM(id){ document.getElementById(id).style.display = 'flex'; }
+  function closeM(id){ document.getElementById(id).style.display = 'none'; }
+
+  function switchGame(gameId, el) {
+    document.querySelectorAll('.game-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.g-nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(gameId).classList.add('active');
+    el.classList.add('active');
+  }
+
+  function getTimeStr() {
+    var now = new Date();
+    return now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  }
+
+  function handleDeposit() {
+    var a = Number(document.getElementById('depAmt').value);
+    var ref = document.getElementById('depRef').value || 'UPI-REF';
+    if(a > 0){
+      bal += a;
+      document.getElementById('bal').innerText = bal.toFixed(2);
+      syncUserBalance();
+      walletLogs.unshift({ type: 'Deposit', amount: a, info: ref, time: getTimeStr(), status: 'Success' });
+      renderWalletHistory();
+      alert('₹' + a + ' जमा हो गए!');
+      closeM('depM');
+    }
+  }
+
+  function handleWithdraw() {
+    var a = Number(document.getElementById('wAmt').value);
+    var acc = document.getElementById('wUpi').value || 'Bank/UPI';
+    if(a > 0 && a <= bal){
+      bal -= a;
+      document.getElementById('bal').innerText = bal.toFixed(2);
+      syncUserBalance();
+      walletLogs.unshift({ type: 'Withdraw', amount: a, info: acc, time: getTimeStr(), status: 'Pending' });
+      renderWalletHistory();
+      alert('विड्रॉल रिक्वेस्ट सबमिट हो गई! ₹' + a);
+      closeM('withM');
+    } else {
+      alert('अपर्याप्त बैलेंस!');
+    }
+  }
+
+  function renderWalletHistory() {
+    var w = document.getElementById('wList');
+    if(walletLogs.length === 0) return;
+    w.innerHTML = '';
+    for(var i = 0; i < walletLogs.length; i++){
+      var item = walletLogs[i];
+      var isW = item.type === 'Withdraw';
+      var tagClass = item.status === 'Success' ? 'tag-success' : 'tag-pending';
+      w.innerHTML += `
+        <div class="list-item">
+          <div>
+            <div style="font-weight:700;color:${isW ? '#ef4444' : '#10b981'}">${isW ? '➖ Withdrawal' : '➕ Deposit'}</div>
+            <div style="color:#64748b;font-size:10px">${item.info} • ${item.time}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:800;color:#facc15">₹${item.amount}</div>
+            <span class="status-tag ${tagClass}">${item.status}</span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  /* --- AVIATOR / PLANE --- */
+  var pInterval = null, pMult = 1.00, pCrash = 2.0, pLive = false;
+  function startPlane() {
+    if(bal < 50){ alert('बैलेंस कम है!'); return; }
+    bal -= 50; document.getElementById('bal').innerText = bal.toFixed(2); syncUserBalance();
+    pLive = true; pMult = 1.00; pCrash = (Math.random() * 3.5 + 1.2).toFixed(2);
+    document.getElementById('planeBetBtn').style.display = 'none';
+    document.getElementById('planeCashBtn').style.display = 'block';
+    document.getElementById('planeStatus').innerText = 'जहाज उड़ रहा है...';
+    document.getElementById('planeStatus').style.color = '#38bdf8';
+    var pObj = document.getElementById('planeObj');
+
+    pInterval = setInterval(function(){
+      pMult += 0.04;
+      document.getElementById('planeMult').innerText = pMult.toFixed(2) + 'x';
+      pObj.style.transform = 'translate(' + Math.min(90, (pMult-1)*35) + 'px, ' + Math.max(-45, 30 - (pMult-1)*25) + 'px)';
+      if(pMult >= pCrash){
+        clearInterval(pInterval); pLive = false;
+        document.getElementById('planeMult').innerText = pCrash + 'x';
+        document.getElementById('planeStatus').innerText = 'क्रैश हो गया! (Flew Away)';
+        document.getElementById('planeStatus').style.color = '#ef4444';
+        document.getElementById('planeCashBtn').style.display = 'none';
+        document.getElementById('planeBetBtn').style.display = 'block';
+      }
+    }, 100);
+  }
+
+  function cashOutPlane() {
+    if(!pLive) return;
+    clearInterval(pInterval); pLive = false;
+    var win = 50 * pMult; bal += win;
+    document.getElementById('bal').innerText = bal.toFixed(2); syncUserBalance();
+    document.getElementById('planeStatus').innerText = 'जीत गए: ₹' + win.toFixed(2);
+    document.getElementById('planeStatus').style.color = '#10b981';
+    document.getElementById('planeCashBtn').style.display = 'none';
+    document.getElementById('planeBetBtn').style.display = 'block';
+  }
+
+  /* --- CHICKEN ROAD --- */
+  var cLive = false, cStep = 0;
+  function initChickenGrid() {
+    var g = document.getElementById('chickenGrid'); g.innerHTML = '';
+    for(var i = 0; i < 25; i++){
+      var tile = document.createElement('div');
+      tile.className = 'c-tile'; tile.innerText = '❓';
+      tile.onclick = (function(t){ return function(){ stepChicken(t); }; })(tile);
+      g.appendChild(tile);
+    }
+  }
+  function startChicken() {
+    if(bal < 50){ alert('बैलेंस कम है!'); return; }
+    bal -= 50; document.getElementById('bal').innerText = bal.toFixed(2); syncUserBalance();
+    cLive = true; cStep = 0;
+    document.getElementById('chickStartBtn').style.display = 'none';
+    document.getElementById('chickCashBtn').style.display = 'block';
+    document.getElementById('chickCashVal').innerText = '0';
+    initChickenGrid();
+  }
+  function stepChicken(tile) {
+    if(!cLive || tile.innerText !== '❓') return;
+    if(Math.random() < 0.22){
+      tile.innerText = '💥'; tile.style.background = '#ef4444';
+      cLive = false; alert('ओह! बम फूट गया, चिकन आउट!');
+      document.getElementById('chickStartBtn').style.display = 'block';
+      document.getElementById('chickCashBtn').style.display = 'none';
+    } else {
+      tile.innerText = '🍗'; tile.style.background = '#10b981';
+      cStep++;
+      var win = (50 * (1 + cStep * 0.4)).toFixed(2);
+      document.getElementById('chickCashVal').innerText = win;
+    }
+  }
+  function cashOutChicken() {
+    if(!cLive) return;
+    var win = Number(document.getElementById('chickCashVal').innerText);
+    bal += win; document.getElementById('bal').innerText = bal.toFixed(2); syncUserBalance();
+    cLive = false; alert('सुरक्षित! आपने निकाले ₹' + win);
+    document.getElementById('chickStartBtn').style.display = 'block';
+    document.getElementById('chickCashBtn').style.display = 'none';
+  }
+
+  /* --- COLOR PREDICTION --- */
+  function changeLang(val) {
+    currentLang = val;
+    var isEn = currentLang === 'en';
+    document.getElementById('tDep').innerText = isEn ? '➕ Deposit' : '➕ Deposit (जमा)';
+    document.getElementById('tWth').innerText = isEn ? '➖ Withdraw' : '➖ Withdraw (निकासी)';
+    document.getElementById('tPeriodLabel').innerText = isEn ? 'Period' : 'पीरियड (Period)';
+    document.getElementById('tTimeLabel').innerText = isEn ? 'Time Left' : 'समय शेष';
+    document.getElementById('tAdvHead').innerText = isEn ? '⚡ Next 5 Results (Advance)' : '⚡ 5 सीजन आगे (Next 5 Results)';
+    document.getElementById('tBig').innerText = isEn ? 'Big' : 'Big (बड़ा)';
+    document.getElementById('tSmall').innerText = isEn ? 'Small' : 'Small (छोटा)';
+    document.getElementById('tabH').innerText = 'Game History';
+    document.getElementById('tabC').innerText = 'Chart';
+    document.getElementById('tabM').innerText = isEn ? 'My Orders' : 'My History';
+    document.getElementById('tabW').innerText = isEn ? 'Wallet Logs' : 'Wallet History';
+  }
+
+  function toggleSound() {
+    soundOn = !soundOn;
+    document.getElementById('sToggleBtn').innerText = soundOn ? '🔊 ON' : '🔇 OFF';
+    document.getElementById('sToggleBtn').style.background = soundOn ? '#2563eb' : '#64748b';
+  }
+
+  function speakText(txt) {
+    if(soundOn && 'speechSynthesis' in window) {
+      var u = new SpeechSynthesisUtterance(txt);
+      u.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
+      window.speechSynthesis.speak(u);
+    }
+  }
+
+  function setChip(val, el){
+    multiplier = val === 'Random' ? [1,5,10,20,50,100][Math.floor(Math.random()*6)] : val;
+    document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+    el.classList.add('active');
+  }
+
+  function bet(x){
+    var cost = 10 * multiplier;
+    if(sec <= 5) return;
+    if(bal >= cost){
+      bal -= cost;
+      document.getElementById('bal').innerText = bal.toFixed(2);
+      syncUserBalance();
+      myBets.push({ period: getP(seq), choice: x, cost: cost });
+      renderMy();
+      alert((currentLang === 'hi' ? 'दांव लगा: ' : 'Bet Placed: ') + x + ' (₹' + cost + ')');
+    } else {
+      alert(currentLang === 'hi' ? 'बैलेंस कम है!' : 'Insufficient Balance!');
+    }
+  }
+
+  function switchTab(id, el){
+    document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    if(el) el.classList.add('active');
+  }
+
+  function getP(s){
+    var d = new Date(), ymd = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+    return ymd + "0005" + s;
+  }
+
+  function getD(n){
+    var sz = n >= 5 ? 'Big' : 'Small', c = 'cr', dot = '<span class="dot bg-r"></span>';
+    if(n === 0){ c = 'cv'; dot = '<span class="dot bg-r"></span><span class="dot bg-v"></span>'; }
+    else if(n === 5){ c = 'cv'; dot = '<span class="dot bg-g"></span><span class="dot bg-v"></span>'; }
+    else if([1,3,7,9].indexOf(n) !== -1){ c = 'cg'; dot = '<span class="dot bg-g"></span>'; }
+    return { sz: sz, c: c, dot: dot };
+  }
+
+  function fillQ(){
+    while(queue.length < 5) queue.push(Math.floor(Math.random()*10));
+    var g = document.getElementById('advGrid'); g.innerHTML = '';
+    queue.forEach(function(n, i){
+      var d = getD(n);
+      g.innerHTML += '<div class="adv-item"><div style="font-size:9px;color:#94a3b8">+' + (i+1) + '</div><div class="' + d.c + '" style="font-size:15px;font-weight:800">' + n + '</div><div style="font-size:9px">' + d.sz + '</div></div>';
+    });
+  }
+
+  function runRound(){
+    var win = queue.shift(); fillQ();
+    var d = getD(win);
+    var p = getP(seq);
+
+    speakText(currentLang === 'hi' ? ('नंबर ' + win + ', ' + d.sz + ' जीता') : ('Number ' + win + ', ' + d.sz + ' wins'));
+
+    var r = document.createElement('div'); r.className = 'row';
+    r.innerHTML = '<div>' + p + '</div><div class="' + d.c + '" style="text-align:center;font-weight:800">' + win + '</div><div style="text-align:center">' + d.sz + '</div><div style="text-align:right">' + d.dot + '</div>';
+    document.getElementById('hList').prepend(r);
+
+    var c = document.createElement('div'); c.className = 'list-item';
+    c.innerHTML = '<div>' + p + '</div><div class="' + d.c + '" style="font-weight:800">' + win + ' (' + d.sz + ')</div><div>' + d.dot + '</div>';
+    document.getElementById('cList').prepend(c);
+
+    seq++;
+    document.getElementById('pId').innerText = getP(seq);
+  }
+
+  function renderMy(){
+    var m = document.getElementById('mList'); m.innerHTML = '';
+    for(var i = myBets.length - 1; i >= 0; i--){
+      var b = myBets[i];
+      m.innerHTML += '<div class="list-item"><div>' + b.period + '</div><div>' + b.choice + '</div><div style="color:#facc15">₹' + b.cost + '</div></div>';
+    }
+  }
+
+  function setAdmin(){
+    var v = document.getElementById('admInp').value;
+    if(v.trim()){
+      var arr = v.split(',').map(function(x){ return Number(x.trim()); }).filter(function(x){ return !isNaN(x) && x >= 0 && x <= 9; });
+      if(arr.length){ queue = arr.concat(queue).slice(0,5); fillQ(); document.getElementById('admInp').value = ''; }
+    }
+  }
+
+  // Session check
+  var savedUser = sessionStorage.getItem('wg_current_user');
+  if(savedUser) { loginSuccess(JSON.parse(savedUser)); }
+
+  fillQ(); initChickenGrid();
+  document.getElementById('pId').innerText = getP(seq);
+  for(var k = 0; k < 3; k++) runRound();
+
+  setInterval(function(){
+    sec--;
+    if(sec <= 5 && sec > 0){
+      document.getElementById('tBox').classList.add('time-danger');
+      ['lockChips','lockColors','lockNums','lockSizes'].forEach(function(id){ document.getElementById(id).classList.add('locked'); });
+    } else {
+      document.getElementById('tBox').classList.remove('time-danger');
+      ['lockChips','lockColors','lockNums','lockSizes'].forEach(function(id){ document.getElementById(id).classList.remove('locked'); });
+    }
+    if(sec < 0){ runRound(); sec = 30; }
+    document.getElementById('tBox').innerText = '00:' + (sec < 10 ? '0' + sec : sec);
+  }, 1000);
+</script>
+
+</body>
+</html>
