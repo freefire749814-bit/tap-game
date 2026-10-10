@@ -1,195 +1,257 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Color Prediction Game UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction Game UI with Admin Preset</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     body {
-      background-color: #0f172a;
+      background-color: #0b111e;
       color: #ffffff;
       display: flex;
-      justify-content: center;
-      padding: 20px;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px;
+      gap: 16px;
     }
-    .game-container {
+    .app-container {
       width: 100%;
-      max-width: 420px;
-      background-color: #111827;
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    }
-    /* Timer Card */
-    .timer-card {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      border: 1px solid #334155;
-      border-radius: 10px;
+      max-width: 440px;
+      background-color: #121927;
+      border-radius: 16px;
       padding: 16px;
-      text-align: center;
-      margin-bottom: 20px;
+      border: 1px solid #1e293b;
     }
-    .timer-card h3 {
-      font-size: 14px;
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #334155;
+    }
+    .period-box h4, .timer-box h4 {
+      font-size: 12px;
       color: #94a3b8;
+      text-transform: uppercase;
+    }
+    .period-id {
+      font-size: 16px;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-top: 2px;
+    }
+    .timer-digits {
+      font-size: 26px;
+      font-weight: 800;
+      color: #facc15;
+    }
+    .table-header {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.2fr 1.2fr;
+      padding: 10px 12px;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 600;
+      border-bottom: 1px solid #1e293b;
       margin-bottom: 6px;
     }
-    .timer-display {
-      font-size: 32px;
-      font-weight: bold;
-      color: #38bdf8;
-      letter-spacing: 2px;
-    }
-    /* History Table */
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 14px;
-      color: #94a3b8;
-      font-size: 14px;
-      border-bottom: 1px solid #1f2937;
-      margin-bottom: 8px;
-    }
-    .history-list {
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .records-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      max-height: 480px;
+      gap: 8px;
+      max-height: 380px;
       overflow-y: auto;
     }
-    .row-item {
-      display: flex;
+    .record-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1.2fr 1.2fr;
       align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      background-color: #1e293b;
-      border-radius: 8px;
-      animation: fadeIn 0.4s ease-in-out;
+      padding: 10px 12px;
+      background-color: #1a2234;
+      border-radius: 10px;
+      border: 1px solid #243048;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
+    .rec-period { font-size: 13px; color: #94a3b8; }
+    .rec-number { font-size: 20px; font-weight: 800; text-align: center; }
+    .rec-size { font-size: 14px; font-weight: 700; text-align: center; }
+    .rec-colors { display: flex; gap: 5px; justify-content: flex-end; }
+    .color-dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+    .c-green { background-color: #10b981; color: #10b981; }
+    .c-red { background-color: #ef4444; color: #ef4444; }
+    .c-violet { background-color: #a855f7; color: #a855f7; }
+    .c-violet-mix { color: #ec4899; }
+
+    /* Admin Panel Styling */
+    .admin-panel {
+      width: 100%;
+      max-width: 440px;
+      background-color: #162032;
+      border: 1px dashed #38bdf8;
+      border-radius: 12px;
+      padding: 14px;
     }
-    .col-number {
-      font-size: 24px;
-      font-weight: 800;
-      width: 40px;
+    .admin-panel h3 {
+      font-size: 14px;
+      color: #38bdf8;
+      margin-bottom: 8px;
     }
-    .col-size {
-      font-size: 18px;
+    .admin-panel input {
+      width: 100%;
+      padding: 8px 10px;
+      background-color: #0b111e;
+      border: 1px solid #334155;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .admin-panel button {
+      width: 100%;
+      padding: 8px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
       font-weight: 600;
-      color: #f1f5f9;
-      flex: 1;
-      text-align: center;
+      cursor: pointer;
     }
-    .col-color {
-      display: flex;
-      gap: 6px;
-      justify-content: flex-end;
-      width: 60px;
+    .queue-preview {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #94a3b8;
     }
-    /* Dots */
-    .dot {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .bg-green { background-color: #22c55e; }
-    .bg-red { background-color: #ef4444; }
-    .bg-violet { background-color: #a855f7; }
-    
-    .text-green { color: #22c55e; }
-    .text-red { color: #ef4444; }
-    .text-violet-mix { color: #ec4899; }
   </style>
 </head>
 <body>
 
-<div class="game-container">
-  <!-- Timer Box -->
-  <div class="timer-card">
-    <h3>अगला परिणाम आने में समय</h3>
-    <div class="timer-display" id="timer">00:30</div>
+<div class="app-container">
+  <div class="top-bar">
+    <div class="period-box">
+      <h4>Period</h4>
+      <div class="period-id" id="currentPeriod">Loading...</div>
+    </div>
+    <div class="timer-box">
+      <h4>Time Remaining</h4>
+      <div class="timer-digits" id="timer">00:30</div>
+    </div>
   </div>
 
-  <!-- Header -->
-  <div class="history-header">
-    <span>नंबर</span>
-    <span>साइज</span>
-    <span>कलर</span>
+  <div class="table-header">
+    <div>Period</div>
+    <div class="text-center">Number</div>
+    <div class="text-center">Size</div>
+    <div class="text-right">Color</div>
   </div>
 
-  <!-- Result List -->
-  <div class="history-list" id="historyList">
-    <!-- रैंडम रिजल्ट यहाँ अपने आप जुड़ेंगे -->
-  </div>
+  <div class="records-list" id="recordsList"></div>
+</div>
+
+<!-- Admin Pre-set Control -->
+<div class="admin-panel">
+  <h3>Admin: अगले 5 राउंड्स का रिजल्ट पहले से तय करें</h3>
+  <input type="text" id="presetInput" placeholder="जैसे: 7, 2, 9, 4, 1 (कॉमा लगाकर)">
+  <button onclick="savePresetQueue()">क्यू में सेव करें (Set Queue)</button>
+  <div class="queue-preview" id="queueStatus">क्यू में अभी: ऑटोमैटिक रैंडम मोड</div>
 </div>
 
 <script>
-  let timeLeft = 30;
-  const timerElement = document.getElementById('timer');
-  const historyList = document.getElementById('historyList');
+  let seconds = 30;
+  let periodSequence = 101;
+  let presetQueue = []; // अगले राउंड्स के नंबर यहाँ स्टोर होंगे
 
-  // नया रैंडम रिजल्ट बनाने का लॉजिक
-  function generateRandomResult() {
-    // 0 से 9 तक रैंडम नंबर
-    const num = Math.floor(Math.random() * 10);
-    
-    // 5 या उससे ऊपर Big, बाकी Small
-    const size = num >= 5 ? 'Big' : 'Small';
+  const timerElem = document.getElementById('timer');
+  const periodElem = document.getElementById('currentPeriod');
+  const recordsList = document.getElementById('recordsList');
+  const queueStatus = document.getElementById('queueStatus');
 
-    let numClass = '';
-    let colorDots = '';
+  function savePresetQueue() {
+    const inputVal = document.getElementById('presetInput').value;
+    if (inputVal.trim() !== '') {
+      presetQueue = inputVal.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n >= 0 && n <= 9);
+      queueStatus.innerText = "अगले आने वाले नंबर: " + presetQueue.join(', ');
+      document.getElementById('presetInput').value = '';
+    }
+  }
 
-    // गेम के नियम अनुसार कलर लॉजिक
-    if (num === 0) {
-      numClass = 'text-violet-mix';
-      colorDots = '<span class="dot bg-red"></span><span class="dot bg-violet"></span>';
-    } else if (num === 5) {
-      numClass = 'text-violet-mix';
-      colorDots = '<span class="dot bg-green"></span><span class="dot bg-violet"></span>';
-    } else if ([1, 3, 7, 9].includes(num)) {
-      numClass = 'text-green';
-      colorDots = '<span class="dot bg-green"></span>';
+  function getPeriodString(seq) {
+    const d = new Date();
+    const ymd = d.getFullYear().toString() +
+      String(d.getMonth() + 1).padStart(2, '0') +
+      String(d.getDate()).padStart(2, '0');
+    return ymd + String(seq).padStart(4, '0');
+  }
+
+  function updateCurrentPeriodDisplay() {
+    periodElem.innerText = getPeriodString(periodSequence);
+  }
+
+  function createNewRoundResult() {
+    let num;
+    // अगर एडमिन ने पहले से नंबर सेट कर रखा है तो वह निकलेगा, नहीं तो रैंडम
+    if (presetQueue.length > 0) {
+      num = presetQueue.shift();
+      queueStatus.innerText = presetQueue.length > 0 ? "बाकी बचे नंबर: " + presetQueue.join(', ') : "क्यू खत्म, अब रैंडम चलेगा";
     } else {
-      numClass = 'text-red';
-      colorDots = '<span class="dot bg-red"></span>';
+      num = Math.floor(Math.random() * 10);
     }
 
-    // नया रिकॉर्ड सबसे ऊपर ऐड करना
+    const size = num >= 5 ? 'Big' : 'Small';
+    let numClass = '';
+    let dotsHtml = '';
+
+    if (num === 0) {
+      numClass = 'c-violet-mix';
+      dotsHtml = '<span class="color-dot c-red"></span><span class="color-dot c-violet"></span>';
+    } else if (num === 5) {
+      numClass = 'c-violet-mix';
+      dotsHtml = '<span class="color-dot c-green"></span><span class="color-dot c-violet"></span>';
+    } else if ([1, 3, 7, 9].includes(num)) {
+      numClass = 'c-green';
+      dotsHtml = '<span class="color-dot c-green"></span>';
+    } else {
+      numClass = 'c-red';
+      dotsHtml = '<span class="color-dot c-red"></span>';
+    }
+
+    const completedPeriod = getPeriodString(periodSequence);
     const row = document.createElement('div');
-    row.className = 'row-item';
+    row.className = 'record-row';
     row.innerHTML = `
-      <div class="col-number ${numClass}">${num}</div>
-      <div class="col-size">${size}</div>
-      <div class="col-color">${colorDots}</div>
+      <div class="rec-period">${completedPeriod}</div>
+      <div class="rec-number ${numClass}">${num}</div>
+      <div class="rec-size">${size}</div>
+      <div class="rec-colors">${dotsHtml}</div>
     `;
 
-    historyList.prepend(row);
+    recordsList.prepend(row);
+    periodSequence++;
+    updateCurrentPeriodDisplay();
   }
 
-  // शुरुआत में कुछ डमी रिजल्ट्स लोड करना
-  for (let i = 0; i < 5; i++) {
-    generateRandomResult();
+  updateCurrentPeriodDisplay();
+  for (let i = 0; i < 3; i++) {
+    createNewRoundResult();
   }
 
-  // 30 सेकंड का ऑटोमैटिक टाइमर लूप
   setInterval(() => {
-    timeLeft--;
-
-    if (timeLeft < 0) {
-      generateRandomResult();
-      timeLeft = 30; // वापस 30 सेकंड पर सेट
+    seconds--;
+    if (seconds < 0) {
+      createNewRoundResult();
+      seconds = 30;
     }
-
-    const formattedSeconds = timeLeft < 10 ? '0' + timeLeft : timeLeft;
-    timerElement.innerText = `00:${formattedSeconds}`;
+    const formattedSec = seconds < 10 ? '0' + seconds : seconds;
+    timerElem.innerText = `00:${formattedSec}`;
   }, 1000);
 </script>
 
