@@ -1,710 +1,285 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>विन गेम - Win Game Multi Gaming</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
-    body { background: #070d18; color: #ffffff; display: flex; flex-direction: column; align-items: center; padding: 10px 10px 80px 10px; gap: 10px; }
-    .container { width: 100%; max-width: 440px; background: #0f172a; border-radius: 16px; padding: 14px; border: 1px solid #1e293b; box-shadow: 0 10px 35px rgba(0,0,0,0.7); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire Esports Dashboard</title>
+    <style>
+        :root {
+            --primary: #ff4655;
+            --secondary: #ffb800;
+            --dark: #0f141c;
+            --card-bg: #1a222d;
+            --text-light: #f5f5f7;
+            --text-muted: #8b9bb4;
+        }
 
-    /* Auth Overlay */
-    #authOverlay { position: fixed; inset: 0; background: #070d18; z-index: 999; display: flex; justify-content: center; align-items: center; padding: 16px; }
-    .auth-card { background: #0f172a; border: 1px solid #334155; border-radius: 14px; padding: 20px; width: 100%; max-width: 340px; text-align: center; }
-    .auth-title { font-size: 20px; font-weight: 900; background: linear-gradient(90deg, #38bdf8, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 14px; }
-    .auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-    .auth-tab { background: #1e293b; border: none; color: #94a3b8; padding: 8px; border-radius: 6px; font-weight: 700; cursor: pointer; }
-    .auth-tab.active { background: #2563eb; color: #fff; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .otp-row { display: flex; gap: 6px; margin: 6px 0; }
-    .btn-otp { background: #3b82f6; border: none; color: #fff; font-size: 11px; font-weight: 700; padding: 0 10px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+        body {
+            background-color: var(--dark);
+            color: var(--text-light);
+            display: flex;
+            min-height: 100vh;
+        }
 
-    /* Top Bar */
-    .top-bar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1e293b; }
-    .brand { font-size: 18px; font-weight: 900; background: linear-gradient(90deg, #38bdf8, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .top-right { display: flex; align-items: center; gap: 8px; }
-    .icon-btn { background: #1e293b; border: 1px solid #334155; color: #38bdf8; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
-    .wallet-badge { background: #1e293b; padding: 5px 12px; border-radius: 20px; color: #facc15; font-size: 14px; font-weight: 800; border: 1px solid #334155; }
+        /* Sidebar */
+        aside {
+            width: 240px;
+            background: #131922;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #232c3d;
+        }
 
-    /* Actions */
-    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
-    .act-btn { padding: 9px; border-radius: 8px; border: none; font-weight: 700; color: #fff; cursor: pointer; font-size: 13px; text-align: center; }
-    .act-dep { background: linear-gradient(135deg, #10b981, #059669); }
-    .act-wth { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        aside h2 {
+            color: var(--secondary);
+            font-size: 20px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    /* Multi-Game Nav */
-    .game-nav { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 12px; }
-    .g-nav-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; }
-    .g-nav-btn.active { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border-color: #3b82f6; }
+        aside nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-weight: 500;
+            display: block;
+            transition: all 0.2s;
+        }
 
-    .game-section { display: none; }
-    .game-section.active { display: block; }
+        aside nav a:hover, aside nav a.active {
+            background-color: var(--primary);
+            color: #fff;
+        }
 
-    /* Color Prediction */
-    .timer-card { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 12px; padding: 10px 14px; border: 1px solid #334155; margin-bottom: 10px; }
-    .sub-txt { font-size: 10px; color: #94a3b8; }
-    .period-id { font-size: 15px; font-weight: 700; color: #38bdf8; }
-    .timer-val { font-size: 26px; font-weight: 900; color: #facc15; }
-    .time-danger { color: #ef4444 !important; animation: blink 0.6s infinite alternate; }
-    @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
+        /* Main Content */
+        main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
 
-    .adv-box { display: none; border: 1px solid #3b82f6; background: rgba(30, 58, 138, 0.2); border-radius: 10px; padding: 8px; margin-bottom: 10px; }
-    .adv-head { font-size: 11px; font-weight: 700; color: #60a5fa; margin-bottom: 6px; }
-    .adv-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-    .adv-item { background: #172540; border-radius: 6px; padding: 4px; text-align: center; border: 1px solid #29406e; }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
 
-    .chip-bar { display: flex; gap: 4px; overflow-x: auto; margin-bottom: 8px; }
-    .chip { flex: 1; padding: 6px 0; background: #1e293b; border: 1px solid #334155; color: #94a3b8; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; }
-    .chip.active { background: #2563eb; color: #fff; border-color: #3b82f6; }
+        header h1 {
+            font-size: 24px;
+        }
 
-    .c-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-    .c-btn { padding: 10px; border-radius: 8px; border: none; font-weight: 800; font-size: 14px; color: #fff; cursor: pointer; }
-    .btn-green { background: #10b981; } .btn-violet { background: #8b5cf6; } .btn-red { background: #ef4444; }
+        .badge {
+            background-color: #27ae60;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
 
-    .n-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 8px; }
-    .n-btn { background: #1e293b; border: 1px solid #334155; padding: 9px; border-radius: 6px; font-size: 16px; font-weight: 800; cursor: pointer; }
-    .cg { color: #10b981; } .cr { color: #ef4444; } .cv { color: #ec4899; }
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
 
-    .s-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-    .btn-big { background: #f59e0b; color: #0f172a; font-size: 15px; font-weight: 800; padding: 10px; border-radius: 8px; border: none; cursor: pointer; }
-    .btn-small { background: #3b82f6; color: #fff; font-size: 15px; font-weight: 800; padding: 10px; border-radius: 8px; border: none; cursor: pointer; }
-    .locked { opacity: 0.4 !important; pointer-events: none !important; }
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
 
-    /* Plane Game */
-    .plane-screen { height: 210px; background: radial-gradient(circle at bottom, #1e293b, #090d16); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; margin-bottom: 12px; border: 1px solid #334155; }
-    .plane-mult { font-size: 42px; font-weight: 900; color: #38bdf8; z-index: 2; }
-    .plane-obj { font-size: 36px; position: absolute; transition: transform 0.1s linear; }
+        .stat-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
 
-    /* Chicken Road */
-    .chicken-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; }
-    .c-tile { aspect-ratio: 1; background: #1e293b; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; border: 1px solid #334155; }
+        .stat-card h3 {
+            font-size: 26px;
+            color: var(--text-light);
+        }
 
-    /* Tabs */
-    .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr 1.2fr; gap: 5px; margin-top: 14px; margin-bottom: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
-    .tab-btn { background: #1e293b; border: none; color: #94a3b8; padding: 7px 4px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer; text-align: center; }
-    .tab-btn.active { background: #38bdf8; color: #0f172a; }
+        /* Table Section */
+        .table-container {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #232c3d;
+        }
 
-    .pane { display: none; max-height: 200px; overflow-y: auto; flex-direction: column; gap: 4px; }
-    .pane.active { display: flex; }
-    .row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 6px 8px; background: #162032; border-radius: 6px; font-size: 12px; align-items: center; }
-    .list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #162032; border-radius: 6px; font-size: 11px; }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-    .bg-g { background: #10b981; } .bg-r { background: #ef4444; } .bg-v { background: #a855f7; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
 
-    /* Modals & Admin */
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; padding: 16px; z-index: 99; }
-    .modal-box { background: #111927; border: 1px solid #334155; border-radius: 12px; padding: 16px; width: 100%; max-width: 340px; }
-    .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1e293b; font-size: 13px; }
-    input { width: 100%; padding: 8px; margin: 6px 0; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px; }
-    .status-tag { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; }
-    .tag-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
-    .tag-success { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #232c3d;
+        }
 
-    .admin-card { display: none; width: 100%; max-width: 440px; background: #141f36; border: 1px dashed #f59e0b; border-radius: 12px; padding: 12px; }
-  </style>
+        th {
+            color: var(--secondary);
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .btn {
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background: #2b3544;
+        }
+    </style>
 </head>
 <body>
 
-<!-- Login & Register Overlay with OTP -->
-<div id="authOverlay">
-  <div class="auth-card">
-    <div class="auth-title">🎮 विन गेम (Win Game)</div>
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="btnTabLogin" onclick="setAuthMode('login')">लॉगिन</button>
-      <button class="auth-tab" id="btnTabReg" onclick="setAuthMode('reg')">रजिस्टर (OTP)</button>
-    </div>
+    <!-- Sidebar -->
+    <aside>
+        <h2>🔥 FF Panel</h2>
+        <nav>
+            <a href="#" class="active">डैशबोर्ड</a>
+            <a href="#">टूर्नामेंट रूम</a>
+            <a href="#">स्लॉट लिस्ट</a>
+            <a href="#">लीडरबोर्ड</a>
+            <a href="#">सेटिंग्स</a>
+        </nav>
+    </aside>
 
-    <input type="text" id="authPhone" placeholder="मोबाइल नंबर (उदा. 9876543210)">
+    <!-- Main Content -->
+    <main>
+        <header>
+            <div>
+                <h1>बैचलर / कस्टम रूम कंट्रोल रूम</h1>
+                <p style="color: var(--text-muted); font-size: 14px;">कस्टम मैच और टीम मैनेजमेंट</p>
+            </div>
+            <span class="badge">सर्वर लाइव</span>
+        </header>
 
-    <div class="otp-row" id="otpBox" style="display:none;">
-      <input type="text" id="authOtp" placeholder="4 अंकों का OTP" style="margin:0;">
-      <button type="button" class="btn-otp" onclick="sendOtp()">OTP भेजें</button>
-    </div>
-
-    <input type="password" id="authPass" placeholder="पासवर्ड">
-
-    <button class="act-btn" style="background:#2563eb;width:100%;padding:10px;margin-top:6px;" id="authSubmitBtn" onclick="handleAuth()">प्रवेश करें</button>
-    <div style="font-size:10px;color:#94a3b8;margin-top:8px;" id="authHint">नया खाता बनाने के लिए "रजिस्टर (OTP)" टैब चुनें।</div>
-  </div>
-</div>
-
-<div class="container">
-  <div class="top-bar">
-    <div>
-      <div class="brand">🎮 विन गेम (Win Game)</div>
-      <div style="font-size:10px;color:#64748b" id="userBadge">UID: -- • VIP 1</div>
-    </div>
-    <div class="top-right">
-      <div class="wallet-badge">₹<span id="bal">0.00</span></div>
-      <button class="icon-btn" onclick="openM('settingModal')" title="Settings">⚙️</button>
-    </div>
-  </div>
-
-  <div class="actions">
-    <button class="act-btn act-dep" onclick="openM('depM')" id="tDep">➕ Deposit (जमा)</button>
-    <button class="act-btn act-wth" onclick="openM('withM')" id="tWth">➖ Withdraw (निकासी)</button>
-  </div>
-
-  <div class="game-nav">
-    <div class="g-nav-btn active" onclick="switchGame('colorGame', this)">🎨 कलर गेम</div>
-    <div class="g-nav-btn" onclick="switchGame('planeGame', this)">✈️ एरोप्लेन</div>
-    <div class="g-nav-btn" onclick="switchGame('chickenGame', this)">🐔 चिकन रोड</div>
-  </div>
-
-  <!-- 1. COLOR GAME -->
-  <div class="game-section active" id="colorGame">
-    <div class="timer-card">
-      <div>
-        <div class="sub-txt" id="tPeriodLabel">पीरियड (Period)</div>
-        <div class="period-id" id="pId">--</div>
-      </div>
-      <div style="text-align: right;">
-        <div class="sub-txt" id="tTimeLabel">समय शेष</div>
-        <div class="timer-val" id="tBox">00:30</div>
-      </div>
-    </div>
-
-    <div class="adv-box" id="advContainer">
-      <div class="adv-head" id="tAdvHead">⚡ 5 सीजन आगे (Next 5 Results)</div>
-      <div class="adv-grid" id="advGrid"></div>
-    </div>
-
-    <div class="chip-bar" id="lockChips">
-      <div class="chip" onclick="setChip('Random', this)">Random</div>
-      <div class="chip active" onclick="setChip(1, this)">X1</div>
-      <div class="chip" onclick="setChip(5, this)">X5</div>
-      <div class="chip" onclick="setChip(10, this)">X10</div>
-      <div class="chip" onclick="setChip(20, this)">X20</div>
-      <div class="chip" onclick="setChip(50, this)">X50</div>
-      <div class="chip" onclick="setChip(100, this)">X100</div>
-    </div>
-
-    <div class="c-grid" id="lockColors">
-      <button class="c-btn btn-green" onclick="bet('Green')" id="tGreen">Green</button>
-      <button class="c-btn btn-violet" onclick="bet('Violet')" id="tViolet">Violet</button>
-      <button class="c-btn btn-red" onclick="bet('Red')" id="tRed">Red</button>
-    </div>
-
-    <div class="n-grid" id="lockNums">
-      <button class="n-btn cv" onclick="bet('0')">0</button>
-      <button class="n-btn cg" onclick="bet('1')">1</button>
-      <button class="n-btn cr" onclick="bet('2')">2</button>
-      <button class="n-btn cg" onclick="bet('3')">3</button>
-      <button class="n-btn cr" onclick="bet('4')">4</button>
-      <button class="n-btn cv" onclick="bet('5')">5</button>
-      <button class="n-btn cr" onclick="bet('6')">6</button>
-      <button class="n-btn cg" onclick="bet('7')">7</button>
-      <button class="n-btn cr" onclick="bet('8')">8</button>
-      <button class="n-btn cg" onclick="bet('9')">9</button>
-    </div>
-
-    <div class="s-grid" id="lockSizes">
-      <button class="btn-big" onclick="bet('Big')" id="tBig">Big (बड़ा)</button>
-      <button class="btn-small" onclick="bet('Small')" id="tSmall">Small (छोटा)</button>
-    </div>
-  </div>
-
-  <!-- 2. PLANE GAME -->
-  <div class="game-section" id="planeGame">
-    <div class="plane-screen">
-      <div class="plane-obj" id="planeObj">✈️</div>
-      <div class="plane-mult" id="planeMult">1.00x</div>
-      <div style="font-size:12px;font-weight:700;color:#94a3b8;margin-top:4px" id="planeStatus">टेक-ऑफ के लिए तैयार</div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <button class="act-btn" style="background:#10b981;padding:12px;" id="planeBetBtn" onclick="startPlane()">₹50 बेट लगाएं</button>
-      <button class="act-btn" style="background:#f59e0b;padding:12px;display:none;" id="planeCashBtn" onclick="cashOutPlane()">कैश आउट</button>
-    </div>
-  </div>
-
-  <!-- 3. CHICKEN ROAD -->
-  <div class="game-section" id="chickenGame">
-    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;display:flex;justify-content:space-between">
-      <span>🐔 सुरक्षित कदम चुनें (बम से बचें)</span>
-      <span style="color:#facc15">कैश आउट: ₹<span id="chickCashVal">0</span></span>
-    </div>
-    <div class="chicken-grid" id="chickenGrid"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <button class="act-btn" style="background:#10b981;padding:12px;" id="chickStartBtn" onclick="startChicken()">₹50 से शुरू करें</button>
-      <button class="act-btn" style="background:#f59e0b;padding:12px;display:none;" id="chickCashBtn" onclick="cashOutChicken()">कैश आउट करें</button>
-    </div>
-  </div>
-
-  <!-- Tabs Bar -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('paneHist', this)" id="tabH">Game History</button>
-    <button class="tab-btn" onclick="switchTab('paneChart', this)" id="tabC">Chart</button>
-    <button class="tab-btn" onclick="switchTab('paneMy', this)" id="tabM">My History</button>
-    <button class="tab-btn" onclick="switchTab('paneWallet', this)" id="tabW">Wallet History</button>
-  </div>
-
-  <div class="pane active" id="paneHist">
-    <div id="hList" style="display:flex;flex-direction:column;gap:4px"></div>
-  </div>
-
-  <div class="pane" id="paneChart">
-    <div id="cList" style="display:flex;flex-direction:column;gap:4px"></div>
-  </div>
-
-  <div class="pane" id="paneMy">
-    <div id="mList" style="text-align:center;color:#64748b;font-size:12px;padding:20px;">कोई बेट नहीं लगाई गई</div>
-  </div>
-
-  <div class="pane" id="paneWallet">
-    <div id="wList" style="text-align:center;color:#64748b;font-size:12px;padding:20px;">कोई विड्रॉल / डिपॉजिट रिकॉर्ड नहीं</div>
-  </div>
-</div>
-
-<div class="admin-card" id="adminControlBox">
-  <h4 style="font-size:12px;color:#fbbf24;margin-bottom:6px">👑 Admin: अगले 5 सीजन तय करें</h4>
-  <input type="text" id="admInp" placeholder="उदा. 7, 2, 5, 8, 1">
-  <button class="act-btn" style="background:#d97706;width:100%" onclick="setAdmin()">क्यू में सेव करें</button>
-</div>
-
-<div class="modal" id="settingModal">
-  <div class="modal-box">
-    <h3 style="margin-bottom:12px" id="setHead">⚙️ सेटिंग्स (Settings)</h3>
-    <div class="setting-row">
-      <span id="setLangLabel">भाषा (Language)</span>
-      <select id="langSelect" onchange="changeLang(this.value)" style="background:#1e293b;color:#fff;border:1px solid #334155;padding:4px 8px;border-radius:6px;">
-        <option value="hi" selected>हिन्दी (Hindi)</option>
-        <option value="en">English</option>
-      </select>
-    </div>
-    <div class="setting-row">
-      <span id="setSoundLabel">वॉइस / साउंड</span>
-      <button class="act-btn" id="sToggleBtn" style="padding:4px 10px;background:#2563eb" onclick="toggleSound()">🔊 ON</button>
-    </div>
-    <div class="setting-row">
-      <span>लॉगआउट</span>
-      <button class="act-btn" style="padding:4px 10px;background:#ef4444" onclick="logout()">Logout</button>
-    </div>
-    <button class="act-btn" style="background:#475569;width:100%;margin-top:14px" onclick="closeM('settingModal')">बंद करें</button>
-  </div>
-</div>
-
-<div class="modal" id="depM">
-  <div class="modal-box">
-    <h4>डिपॉजिट (Add Money)</h4>
-    <input type="number" id="depAmt" placeholder="राशि (₹500)">
-    <input type="text" id="depRef" placeholder="UPI ID / UTR No.">
-    <button class="act-btn act-dep" style="width:100%;margin-top:4px" onclick="handleDeposit()">पुष्टि करें (Pay)</button><br><br>
-    <button class="act-btn" style="background:#475569;width:100%" onclick="closeM('depM')">रद्द करें</button>
-  </div>
-</div>
-
-<div class="modal" id="withM">
-  <div class="modal-box">
-    <h4>विड्रॉल (Withdraw Money)</h4>
-    <input type="number" id="wAmt" placeholder="निकासी राशि (₹300)">
-    <input type="text" id="wUpi" placeholder="UPI ID / बैंक खाता संख्या">
-    <input type="text" id="wName" placeholder="खाताधारक का नाम">
-    <button class="act-btn act-wth" style="width:100%;margin-top:4px" onclick="handleWithdraw()">विड्रॉल लगाएं</button><br><br>
-    <button class="act-btn" style="background:#334155;width:100%;margin-bottom:6px" onclick="closeM('withM'); switchTab('paneWallet', document.getElementById('tabW'));">📜 विड्रॉल हिस्ट्री देखें</button>
-    <button class="act-btn" style="background:#475569;width:100%" onclick="closeM('withM')">रद्द करें</button>
-  </div>
-  </div>
-        <script>
-  /* --- AUTH & OTP LOGIC --- */
-  var authMode = 'login';
-  var currentUser = null;
-  var generatedOtp = null;
-  var ADMIN_NUMBER = '7867867860';
-  var ADMIN_PASS = 'admin786';
-
-  function setAuthMode(mode) {
-    authMode = mode;
-    document.getElementById('btnTabLogin').classList.toggle('active', mode === 'login');
-    document.getElementById('btnTabReg').classList.toggle('active', mode === 'reg');
-    document.getElementById('otpBox').style.display = (mode === 'reg') ? 'flex' : 'none';
-    document.getElementById('authSubmitBtn').innerText = (mode === 'login') ? 'लॉगिन करें' : 'रजिस्टर करें';
-    document.getElementById('authHint').innerText = (mode === 'login') 
-      ? 'नया खाता बनाने के लिए "रजिस्टर (OTP)" टैब चुनें।' 
-      : 'नंबर डालकर "OTP भेजें" दबाएं, फिर OTP और पासवर्ड सेट करें।';
-  }
-
-  function sendOtp() {
-    var phone = document.getElementById('authPhone').value.trim();
-    if(phone.length < 10) {
-      alert('कृपया सही 10-अंकों का मोबाइल नंबर दर्ज करें!');
-      return;
-    }
-    generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-    alert('📩 [SMS Verification]\nआपका OTP है: ' + generatedOtp);
-    document.getElementById('authOtp').value = generatedOtp;
-  }
-
-  function handleAuth() {
-    var phone = document.getElementById('authPhone').value.trim();
-    var pass = document.getElementById('authPass').value.trim();
-
-    if(!phone || !pass) { 
-      alert('मोबाइल नंबर और पासवर्ड भरें!'); 
-      return; 
-    }
-
-    if(phone === ADMIN_NUMBER && pass === ADMIN_PASS) {
-      loginSuccess({ phone: phone, uid: 'ADMIN_01', bal: 5000, isAdmin: true });
-      return;
-    }
-
-    var users = JSON.parse(localStorage.getItem('wg_users') || '{}');
-
-    if(authMode === 'reg') {
-      var enteredOtp = document.getElementById('authOtp').value.trim();
-      if(!generatedOtp || enteredOtp !== generatedOtp) {
-        alert('गलत OTP! पहले "OTP भेजें" पर क्लिक करके सही OTP डालें।');
-        return;
-      }
-      if(users[phone]) { 
-        alert('यह नंबर पहले से रजिस्टर है! लॉगिन टैब चुनें।'); 
-        return; 
-      }
-
-      var uid = 'UID' + Math.floor(100000 + Math.random() * 900000);
-      users[phone] = { phone: phone, pass: pass, uid: uid, bal: 500, isAdmin: false };
-      localStorage.setItem('wg_users', JSON.stringify(users));
-      alert('बधाई हो! रजिस्ट्रेशन सफल हुआ। ₹500 का वेलकम बोनस मिला।');
-      loginSuccess(users[phone]);
-    } else {
-      if(!users[phone]) {
-        alert('यह खाता मौजूद नहीं है! पहले "रजिस्टर (OTP)" से खाता बनाएं।');
-        return;
-      }
-      if(users[phone].pass !== pass) {
-        alert('गलत पासवर्ड!');
-        return;
-      }
-      loginSuccess(users[phone]);
-    }
-  }
-
-  function loginSuccess(user) {
-    currentUser = user;
-    sessionStorage.setItem('wg_current_user', JSON.stringify(user));
-    document.getElementById('authOverlay').style.display = 'none';
-    document.getElementById('userBadge').innerText = user.isAdmin ? '👑 ADMIN • OWNER' : user.uid + ' • VIP 1';
-    bal = user.bal;
-    document.getElementById('bal').innerText = bal.toFixed(2);
-
-    if(user.isAdmin) {
-      document.getElementById('advContainer').style.display = 'block';
-      document.getElementById('adminControlBox').style.display = 'block';
-    } else {
-      document.getElementById('advContainer').style.display = 'none';
-      document.getElementById('adminControlBox').style.display = 'none';
-    }
-  }
-
-  function logout() {
-    sessionStorage.removeItem('wg_current_user');
-    location.reload();
-  }
-
-  function syncUserBalance() {
-    if(!currentUser) return;
-    currentUser.bal = bal;
-    sessionStorage.setItem('wg_current_user', JSON.stringify(currentUser));
-    if(!currentUser.isAdmin) {
-      var users = JSON.parse(localStorage.getItem('wg_users') || '{}');
-      if(users[currentUser.phone]) {
-        users[currentUser.phone].bal = bal;
-        localStorage.setItem('wg_users', JSON.stringify(users));
-      }
-    }
-  }
-
-  /* --- COMMON GAME LOGIC --- */
-  var bal = 0, sec = 30, seq = 1350, multiplier = 1, currentLang = 'hi', soundOn = true;
-  var queue = [], myBets = [], walletLogs = [];
-
-  function openM(id){ document.getElementById(id).style.display = 'flex'; }
-  function closeM(id){ document.getElementById(id).style.display = 'none'; }
-
-  function switchGame(gameId, el) {
-    document.querySelectorAll('.game-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.g-nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(gameId).classList.add('active');
-    el.classList.add('active');
-  }
-
-  function getTimeStr() {
-    var now = new Date();
-    return now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-  }
-
-  function handleDeposit() {
-    var a = Number(document.getElementById('depAmt').value);
-    var ref = document.getElementById('depRef').value || 'UPI-REF';
-    if(a > 0){
-      bal += a;
-      document.getElementById('bal').innerText = bal.toFixed(2);
-      syncUserBalance();
-      walletLogs.unshift({ type: 'Deposit', amount: a, info: ref, time: getTimeStr(), status: 'Success' });
-      renderWalletHistory();
-      alert('₹' + a + ' जमा हो गए!');
-      closeM('depM');
-    }
-  }
-
-  function handleWithdraw() {
-    var a = Number(document.getElementById('wAmt').value);
-    var acc = document.getElementById('wUpi').value || 'Bank/UPI';
-    if(a > 0 && a <= bal){
-      bal -= a;
-      document.getElementById('bal').innerText = bal.toFixed(2);
-      syncUserBalance();
-      walletLogs.unshift({ type: 'Withdraw', amount: a, info: acc, time: getTimeStr(), status: 'Pending' });
-      renderWalletHistory();
-      alert('विड्रॉल रिक्वेस्ट सबमिट हो गई! ₹' + a);
-      closeM('withM');
-    } else {
-      alert('अपर्याप्त बैलेंस!');
-    }
-  }
-
-  function renderWalletHistory() {
-    var w = document.getElementById('wList');
-    if(walletLogs.length === 0) return;
-    w.innerHTML = '';
-    for(var i = 0; i < walletLogs.length; i++){
-      var item = walletLogs[i];
-      var isW = item.type === 'Withdraw';
-      var tagClass = item.status === 'Success' ? 'tag-success' : 'tag-pending';
-      w.innerHTML += `
-        <div class="list-item">
-          <div>
-            <div style="font-weight:700;color:${isW ? '#ef4444' : '#10b981'}">${isW ? '➖ Withdrawal' : '➕ Deposit'}</div>
-            <div style="color:#64748b;font-size:10px">${item.info} • ${item.time}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-weight:800;color:#facc15">₹${item.amount}</div>
-            <span class="status-tag ${tagClass}">${item.status}</span>
-          </div>
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p>कुल रजिस्टर्ड टीमें</p>
+                <h3>12 / 12</h3>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--secondary);">
+                <p>मैप मोड</p>
+                <h3>बर्मुडा (Bermuda)</h3>
+            </div>
+            <div class="stat-card">
+                <p>मैच फॉर्मेट</p>
+                <h3>Battle Royale (Squad)</h3>
+            </div>
+            <div class="stat-card" style="border-left-color: #27ae60;">
+                <p>रूम स्टेटस</p>
+                <h3>रेडी (Ready)</h3>
+            </div>
         </div>
-      `;
-    }
-  }
 
-  /* --- AVIATOR / PLANE --- */
-  var pInterval = null, pMult = 1.00, pCrash = 2.0, pLive = false;
-  function startPlane() {
-    if(bal < 50){ alert('बैलेंस कम है!'); return; }
-    bal -= 50; document.getElementById('bal').innerText = bal.toFixed(2); syncUserBalance();
-    pLive = true; pMult = 1.00; pCrash = (Math.random() * 3.5 + 1.2).toFixed(2);
-    document.getElementById('planeBetBtn').style.display = 'none';
-    document.getElementById('planeCashBtn').style.display = 'block';
-    document.getElementById('planeStatus').innerText = 'जहाज उड़ रहा है...';
-    document.getElementById('planeStatus').style.color = '#38bdf8';
-    var pObj = document.getElementById('planeObj');
+        <!-- Slot Management Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h2>टीम स्लॉट लिस्ट</h2>
+                <button class="btn" onclick="addTeam()">+ नई टीम जोड़ें</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>स्लॉट</th>
+                        <th>टीम का नाम</th>
+                        <th>लीडर UID</th>
+                        <th>स्टेटस</th>
+                        <th>एक्शन</th>
+                    </tr>
+                </thead>
+                <tbody id="slotTable">
+                    <tr>
+                        <td>#1</td>
+                        <td>Team Apex</td>
+                        <td>102938475</td>
+                        <td><span style="color: #27ae60;">पुष्ट (Confirmed)</span></td>
+                        <td><button class="btn btn-secondary">संपादित करें</button></td>
+                    </tr>
+                    <tr>
+                        <td>#2</td>
+                        <td>Shadow Hunters</td>
+                        <td>987654321</td>
+                        <td><span style="color: #27ae60;">पुष्ट (Confirmed)</span></td>
+                        <td><button class="btn btn-secondary">संपादित करें</button></td>
+                    </tr>
+                    <tr>
+                        <td>#3</td>
+                        <td>Red Warriors</td>
+                        <td>456123789</td>
+                        <td><span style="color: var(--secondary);">प्रतीक्षारत (Pending)</span></td>
+                        <td><button class="btn btn-secondary">संपादित करें</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
 
-    pInterval = setInterval(function(){
-      pMult += 0.04;
-      document.getElementById('planeMult').innerText = pMult.toFixed(2) + 'x';
-      pObj.style.transform = 'translate(' + Math.min(90, (pMult-1)*35) + 'px, ' + Math.max(-45, 30 - (pMult-1)*25) + 'px)';
-      if(pMult >= pCrash){
-        clearInterval(pInterval); pLive = false;
-        document.getElementById('planeMult').innerText = pCrash + 'x';
-        document.getElementById('planeStatus').innerText = 'क्रैश हो गया! (Flew Away)';
-        document.getElementById('planeStatus').style.color = '#ef4444';
-        document.getElementById('planeCashBtn').style.display = 'none';
-        document.getElementById('planeBetBtn').style.display = 'block';
-      }
-    }, 100);
-  }
+    <script>
+        function addTeam() {
+            const teamName = prompt("टीम का नाम दर्ज करें:");
+            const uid = prompt("टीम लीडर की UID दर्ज करें:");
 
-  function cashOutPlane() {
-    if(!pLive) return;
-    clearInterval(pInterval); pLive = false;
-    var win = 50 * pMult; bal += win;
-    document.getElementById('bal').innerText = bal.toFixed(2); syncUserBalance();
-    document.getElementById('planeStatus').innerText = 'जीत गए: ₹' + win.toFixed(2);
-    document.getElementById('planeStatus').style.color = '#10b981';
-    document.getElementById('planeCashBtn').style.display = 'none';
-    document.getElementById('planeBetBtn').style.display = 'block';
-  }
+            if (teamName && uid) {
+                const table = document.getElementById("slotTable");
+                const rowCount = table.rows.length + 1;
+                const newRow = table.insertRow();
 
-  /* --- CHICKEN ROAD --- */
-  var cLive = false, cStep = 0;
-  function initChickenGrid() {
-    var g = document.getElementById('chickenGrid'); g.innerHTML = '';
-    for(var i = 0; i < 25; i++){
-      var tile = document.createElement('div');
-      tile.className = 'c-tile'; tile.innerText = '❓';
-      tile.onclick = (function(t){ return function(){ stepChicken(t); }; })(tile);
-      g.appendChild(tile);
-    }
-  }
-  function startChicken() {
-    if(bal < 50){ alert('बैलेंस कम है!'); return; }
-    bal -= 50; document.getElementById('bal').innerText = bal.toFixed(2); syncUserBalance();
-    cLive = true; cStep = 0;
-    document.getElementById('chickStartBtn').style.display = 'none';
-    document.getElementById('chickCashBtn').style.display = 'block';
-    document.getElementById('chickCashVal').innerText = '0';
-    initChickenGrid();
-  }
-  function stepChicken(tile) {
-    if(!cLive || tile.innerText !== '❓') return;
-    if(Math.random() < 0.22){
-      tile.innerText = '💥'; tile.style.background = '#ef4444';
-      cLive = false; alert('ओह! बम फूट गया, चिकन आउट!');
-      document.getElementById('chickStartBtn').style.display = 'block';
-      document.getElementById('chickCashBtn').style.display = 'none';
-    } else {
-      tile.innerText = '🍗'; tile.style.background = '#10b981';
-      cStep++;
-      var win = (50 * (1 + cStep * 0.4)).toFixed(2);
-      document.getElementById('chickCashVal').innerText = win;
-    }
-  }
-  function cashOutChicken() {
-    if(!cLive) return;
-    var win = Number(document.getElementById('chickCashVal').innerText);
-    bal += win; document.getElementById('bal').innerText = bal.toFixed(2); syncUserBalance();
-    cLive = false; alert('सुरक्षित! आपने निकाले ₹' + win);
-    document.getElementById('chickStartBtn').style.display = 'block';
-    document.getElementById('chickCashBtn').style.display = 'none';
-  }
-
-  /* --- COLOR PREDICTION --- */
-  function changeLang(val) {
-    currentLang = val;
-    var isEn = currentLang === 'en';
-    document.getElementById('tDep').innerText = isEn ? '➕ Deposit' : '➕ Deposit (जमा)';
-    document.getElementById('tWth').innerText = isEn ? '➖ Withdraw' : '➖ Withdraw (निकासी)';
-    document.getElementById('tPeriodLabel').innerText = isEn ? 'Period' : 'पीरियड (Period)';
-    document.getElementById('tTimeLabel').innerText = isEn ? 'Time Left' : 'समय शेष';
-    document.getElementById('tAdvHead').innerText = isEn ? '⚡ Next 5 Results (Advance)' : '⚡ 5 सीजन आगे (Next 5 Results)';
-    document.getElementById('tBig').innerText = isEn ? 'Big' : 'Big (बड़ा)';
-    document.getElementById('tSmall').innerText = isEn ? 'Small' : 'Small (छोटा)';
-    document.getElementById('tabH').innerText = 'Game History';
-    document.getElementById('tabC').innerText = 'Chart';
-    document.getElementById('tabM').innerText = isEn ? 'My Orders' : 'My History';
-    document.getElementById('tabW').innerText = isEn ? 'Wallet Logs' : 'Wallet History';
-  }
-
-  function toggleSound() {
-    soundOn = !soundOn;
-    document.getElementById('sToggleBtn').innerText = soundOn ? '🔊 ON' : '🔇 OFF';
-    document.getElementById('sToggleBtn').style.background = soundOn ? '#2563eb' : '#64748b';
-  }
-
-  function speakText(txt) {
-    if(soundOn && 'speechSynthesis' in window) {
-      var u = new SpeechSynthesisUtterance(txt);
-      u.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
-      window.speechSynthesis.speak(u);
-    }
-  }
-
-  function setChip(val, el){
-    multiplier = val === 'Random' ? [1,5,10,20,50,100][Math.floor(Math.random()*6)] : val;
-    document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
-    el.classList.add('active');
-  }
-
-  function bet(x){
-    var cost = 10 * multiplier;
-    if(sec <= 5) return;
-    if(bal >= cost){
-      bal -= cost;
-      document.getElementById('bal').innerText = bal.toFixed(2);
-      syncUserBalance();
-      myBets.push({ period: getP(seq), choice: x, cost: cost });
-      renderMy();
-      alert((currentLang === 'hi' ? 'दांव लगा: ' : 'Bet Placed: ') + x + ' (₹' + cost + ')');
-    } else {
-      alert(currentLang === 'hi' ? 'बैलेंस कम है!' : 'Insufficient Balance!');
-    }
-  }
-
-  function switchTab(id, el){
-    document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('active'); });
-    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-    document.getElementById(id).classList.add('active');
-    if(el) el.classList.add('active');
-  }
-
-  function getP(s){
-    var d = new Date(), ymd = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
-    return ymd + "0005" + s;
-  }
-
-  function getD(n){
-    var sz = n >= 5 ? 'Big' : 'Small', c = 'cr', dot = '<span class="dot bg-r"></span>';
-    if(n === 0){ c = 'cv'; dot = '<span class="dot bg-r"></span><span class="dot bg-v"></span>'; }
-    else if(n === 5){ c = 'cv'; dot = '<span class="dot bg-g"></span><span class="dot bg-v"></span>'; }
-    else if([1,3,7,9].indexOf(n) !== -1){ c = 'cg'; dot = '<span class="dot bg-g"></span>'; }
-    return { sz: sz, c: c, dot: dot };
-  }
-
-  function fillQ(){
-    while(queue.length < 5) queue.push(Math.floor(Math.random()*10));
-    var g = document.getElementById('advGrid'); g.innerHTML = '';
-    queue.forEach(function(n, i){
-      var d = getD(n);
-      g.innerHTML += '<div class="adv-item"><div style="font-size:9px;color:#94a3b8">+' + (i+1) + '</div><div class="' + d.c + '" style="font-size:15px;font-weight:800">' + n + '</div><div style="font-size:9px">' + d.sz + '</div></div>';
-    });
-  }
-
-  function runRound(){
-    var win = queue.shift(); fillQ();
-    var d = getD(win);
-    var p = getP(seq);
-
-    speakText(currentLang === 'hi' ? ('नंबर ' + win + ', ' + d.sz + ' जीता') : ('Number ' + win + ', ' + d.sz + ' wins'));
-
-    var r = document.createElement('div'); r.className = 'row';
-    r.innerHTML = '<div>' + p + '</div><div class="' + d.c + '" style="text-align:center;font-weight:800">' + win + '</div><div style="text-align:center">' + d.sz + '</div><div style="text-align:right">' + d.dot + '</div>';
-    document.getElementById('hList').prepend(r);
-
-    var c = document.createElement('div'); c.className = 'list-item';
-    c.innerHTML = '<div>' + p + '</div><div class="' + d.c + '" style="font-weight:800">' + win + ' (' + d.sz + ')</div><div>' + d.dot + '</div>';
-    document.getElementById('cList').prepend(c);
-
-    seq++;
-    document.getElementById('pId').innerText = getP(seq);
-  }
-
-  function renderMy(){
-    var m = document.getElementById('mList'); m.innerHTML = '';
-    for(var i = myBets.length - 1; i >= 0; i--){
-      var b = myBets[i];
-      m.innerHTML += '<div class="list-item"><div>' + b.period + '</div><div>' + b.choice + '</div><div style="color:#facc15">₹' + b.cost + '</div></div>';
-    }
-  }
-
-  function setAdmin(){
-    var v = document.getElementById('admInp').value;
-    if(v.trim()){
-      var arr = v.split(',').map(function(x){ return Number(x.trim()); }).filter(function(x){ return !isNaN(x) && x >= 0 && x <= 9; });
-      if(arr.length){ queue = arr.concat(queue).slice(0,5); fillQ(); document.getElementById('admInp').value = ''; }
-    }
-  }
-
-  var savedUser = sessionStorage.getItem('wg_current_user');
-  if(savedUser) { loginSuccess(JSON.parse(savedUser)); }
-
-  fillQ(); initChickenGrid();
-  document.getElementById('pId').innerText = getP(seq);
-  for(var k = 0; k < 3; k++) runRound();
-
-  setInterval(function(){
-    sec--;
-    if(sec <= 5 && sec > 0){
-      document.getElementById('tBox').classList.add('time-danger');
-      ['lockChips','lockColors','lockNums','lockSizes'].forEach(function(id){ document.getElementById(id).classList.add('locked'); });
-    } else {
-      document.getElementById('tBox').classList.remove('time-danger');
-      ['lockChips','lockColors','lockNums','lockSizes'].forEach(function(id){ document.getElementById(id).classList.remove('locked'); });
-    }
-    if(sec < 0){ runRound(); sec = 30; }
-    document.getElementById('tBox').innerText = '00:' + (sec < 10 ? '0' + sec : sec);
-  }, 1000);
-</script>
-
+                newRow.innerHTML = `
+                    <td>#${rowCount}</td>
+                    <td>${teamName}</td>
+                    <td>${uid}</td>
+                    <td><span style="color: #27ae60;">पुष्ट (Confirmed)</span></td>
+                    <td><button class="btn btn-secondary">संपादित करें</button></td>
+                `;
+            }
+        }
+    </script>
 </body>
 </html>
