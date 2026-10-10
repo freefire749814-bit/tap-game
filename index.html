@@ -3,123 +3,125 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>विन गेम - Win Game</title>
+  <title>Win Game - विन गेम</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
-    body { background-color: #0b1120; color: #ffffff; display: flex; flex-direction: column; align-items: center; padding: 10px; gap: 10px; }
-    .container { width: 100%; max-width: 440px; background-color: #111a2e; border-radius: 16px; padding: 14px; border: 1px solid #1e2c4f; box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+    body { background: #070d18; color: #ffffff; display: flex; flex-direction: column; align-items: center; padding: 10px 10px 70px 10px; gap: 10px; }
+    .container { width: 100%; max-width: 440px; background: #0f172a; border-radius: 16px; padding: 14px; border: 1px solid #1e293b; box-shadow: 0 10px 35px rgba(0,0,0,0.7); }
 
     /* Top Bar */
-    .top-bar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1e2c4f; }
-    .brand-name { font-size: 19px; font-weight: 900; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .wallet-pill { background: #18233c; padding: 6px 14px; border-radius: 20px; color: #facc15; font-size: 14px; font-weight: 800; border: 1px solid #2a3d66; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1e293b; }
+    .brand { font-size: 18px; font-weight: 900; background: linear-gradient(90deg, #38bdf8, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .top-right { display: flex; align-items: center; gap: 8px; }
+    .icon-btn { background: #1e293b; border: 1px solid #334155; color: #38bdf8; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
+    .wallet-badge { background: #1e293b; padding: 5px 12px; border-radius: 20px; color: #facc15; font-size: 14px; font-weight: 800; border: 1px solid #334155; }
 
-    /* Action Buttons */
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
-    .btn-act { padding: 9px; border-radius: 8px; border: none; font-weight: 700; color: #fff; cursor: pointer; font-size: 13px; text-align: center; }
-    .btn-dep { background: linear-gradient(135deg, #10b981, #059669); }
-    .btn-wth { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    /* Deposit / Withdraw */
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+    .act-btn { padding: 9px; border-radius: 8px; border: none; font-weight: 700; color: #fff; cursor: pointer; font-size: 13px; text-align: center; }
+    .act-dep { background: linear-gradient(135deg, #10b981, #059669); }
+    .act-wth { background: linear-gradient(135deg, #ef4444, #dc2626); }
 
-    /* Timer & Period */
-    .round-info { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1b2640, #131c31); border-radius: 12px; padding: 10px 14px; border: 1px solid #283a60; margin-bottom: 10px; }
-    .info-sub { font-size: 10px; color: #94a3b8; text-transform: uppercase; }
-    .period-id { font-size: 15px; font-weight: 700; color: #38bdf8; margin-top: 2px; }
-    .timer-text { font-size: 24px; font-weight: 800; color: #facc15; }
-    .timer-danger { color: #ef4444 !important; animation: blink 0.7s infinite alternate; }
-    @keyframes blink { from { opacity: 1; } to { opacity: 0.4; } }
+    /* Period & Countdown */
+    .timer-card { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 12px; padding: 10px 14px; border: 1px solid #334155; margin-bottom: 10px; }
+    .sub-txt { font-size: 10px; color: #94a3b8; }
+    .period-id { font-size: 15px; font-weight: 700; color: #38bdf8; }
+    .timer-val { font-size: 26px; font-weight: 900; color: #facc15; }
+    .time-danger { color: #ef4444 !important; animation: blink 0.6s infinite alternate; }
+    @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
 
-    /* Admin Secret Box (5 Season Advance) */
-    #adminArea { display: none; margin-bottom: 12px; border: 1px dashed #f59e0b; background: rgba(245, 158, 11, 0.08); border-radius: 10px; padding: 10px; }
-    .adv-title { font-size: 11px; font-weight: 700; color: #fbbf24; margin-bottom: 6px; }
-    .adv-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 8px; }
-    .adv-item { background: #172540; border-radius: 6px; padding: 4px 2px; text-align: center; border: 1px solid #2a3d66; }
+    /* 5 Seasons Advance */
+    .adv-box { border: 1px solid #3b82f6; background: rgba(30, 58, 138, 0.2); border-radius: 10px; padding: 8px; margin-bottom: 10px; }
+    .adv-head { font-size: 11px; font-weight: 700; color: #60a5fa; margin-bottom: 6px; }
+    .adv-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+    .adv-item { background: #172540; border-radius: 6px; padding: 4px; text-align: center; border: 1px solid #29406e; }
 
-    /* Betting Multipliers Bar */
-    .chip-bar { display: flex; gap: 4px; overflow-x: auto; margin-bottom: 10px; padding-bottom: 2px; }
-    .chip { flex: 1; padding: 6px 0; background: #19243d; border: 1px solid #2a3d66; color: #94a3b8; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; min-width: 44px; }
-    .chip.active { background: #2563eb; color: #ffffff; border-color: #3b82f6; }
+    /* Multiplier Chips */
+    .chip-bar { display: flex; gap: 4px; overflow-x: auto; margin-bottom: 8px; }
+    .chip { flex: 1; padding: 6px 0; background: #1e293b; border: 1px solid #334155; color: #94a3b8; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; }
+    .chip.active { background: #2563eb; color: #fff; border-color: #3b82f6; }
 
-    /* Color Bets */
-    .color-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    /* Betting Controls */
+    .c-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
     .c-btn { padding: 10px; border-radius: 8px; border: none; font-weight: 800; font-size: 14px; color: #fff; cursor: pointer; }
-    .c-green { background: #10b981; }
-    .c-violet { background: #8b5cf6; }
-    .c-red { background: #ef4444; }
+    .btn-green { background: #10b981; } .btn-violet { background: #8b5cf6; } .btn-red { background: #ef4444; }
 
-    /* Number Grid 0-9 */
-    .num-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 8px; }
-    .n-btn { background: #19243d; border: 1px solid #283a60; padding: 8px; border-radius: 6px; font-size: 16px; font-weight: 800; cursor: pointer; }
-    .num-cg { color: #10b981; } .num-cr { color: #ef4444; } .num-cv { color: #ec4899; }
+    .n-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 8px; }
+    .n-btn { background: #1e293b; border: 1px solid #334155; padding: 9px; border-radius: 6px; font-size: 16px; font-weight: 800; cursor: pointer; }
+    .cg { color: #10b981; } .cr { color: #ef4444; } .cv { color: #ec4899; }
 
-    /* Big / Small */
-    .size-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    .s-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
     .btn-big { background: #f59e0b; color: #0f172a; font-size: 15px; font-weight: 800; padding: 10px; border-radius: 8px; border: none; cursor: pointer; }
-    .btn-small { background: #3b82f6; color: #ffffff; font-size: 15px; font-weight: 800; padding: 10px; border-radius: 8px; border: none; cursor: pointer; }
-    .disabled-bet { opacity: 0.4 !important; pointer-events: none !important; }
+    .btn-small { background: #3b82f6; color: #fff; font-size: 15px; font-weight: 800; padding: 10px; border-radius: 8px; border: none; cursor: pointer; }
+    .locked { opacity: 0.4 !important; pointer-events: none !important; }
 
-    /* Tabs (Game History / Chart / My History) */
-    .tabs-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; border-bottom: 1px solid #1e2c4f; padding-bottom: 8px; }
-    .tab-btn { background: #16223a; border: none; color: #94a3b8; padding: 8px 4px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; text-align: center; }
-    .tab-btn.active { background: #22d3ee; color: #0b1120; }
+    /* Tabs */
+    .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    .tab-btn { background: #1e293b; border: none; color: #94a3b8; padding: 7px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; }
+    .tab-btn.active { background: #38bdf8; color: #0f172a; }
 
-    /* Tab Contents */
-    .tab-pane { display: none; max-height: 250px; overflow-y: auto; }
-    .tab-pane.show { display: flex; flex-direction: column; gap: 5px; }
+    .pane { display: none; max-height: 220px; overflow-y: auto; flex-direction: column; gap: 4px; }
+    .pane.active { display: flex; }
+    .row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 6px 8px; background: #162032; border-radius: 6px; font-size: 12px; align-items: center; }
+    .chart-item { display: flex; justify-content: space-between; padding: 6px 8px; background: #162032; border-radius: 6px; font-size: 11px; }
 
-    .tbl-head { display: grid; grid-template-columns: 2fr 1fr 1.2fr 1.2fr; padding: 6px 8px; color: #64748b; font-size: 11px; border-bottom: 1px solid #1e2c4f; }
-    .row-item { display: grid; grid-template-columns: 2fr 1fr 1.2fr 1.2fr; align-items: center; padding: 7px 8px; background: #152037; border-radius: 6px; font-size: 12px; }
-    .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
     .bg-g { background: #10b981; } .bg-r { background: #ef4444; } .bg-v { background: #a855f7; }
 
-    /* Chart Bar */
-    .chart-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; background: #152037; border-radius: 6px; font-size: 11px; }
+    /* Bottom Navbar */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0d1527; border-top: 1px solid #1e293b; display: flex; justify-content: space-around; padding: 8px 0; z-index: 50; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #64748b; cursor: pointer; gap: 2px; }
+    .nav-item.active { color: #38bdf8; }
 
-    /* Modals */
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; padding: 16px; z-index: 99; }
-    .modal-box { background: #111a2e; border: 1px solid #2a3d66; border-radius: 12px; padding: 16px; width: 100%; max-width: 330px; text-align: center; }
-    .modal-input { width: 100%; padding: 9px; margin: 8px 0; background: #18233c; border: 1px solid #2a3d66; color: #fff; border-radius: 6px; font-size: 13px; }
+    /* Modals & Settings */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; padding: 16px; z-index: 99; }
+    .modal-box { background: #111927; border: 1px solid #334155; border-radius: 12px; padding: 16px; width: 100%; max-width: 330px; }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1e293b; font-size: 13px; }
+    input { width: 100%; padding: 8px; margin: 6px 0; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px; }
+    .admin-card { width: 100%; max-width: 440px; background: #141f36; border: 1px dashed #f59e0b; border-radius: 12px; padding: 12px; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Brand & Wallet -->
+  <!-- Top Bar -->
   <div class="top-bar">
     <div>
-      <div class="brand-name">🎮 विन गेम (Win Game)</div>
-      <div style="font-size:10px; color:#64748b;">UID: 981402 • VIP 1</div>
+      <div class="brand">🎮 Win Game (विन गेम)</div>
+      <div style="font-size:10px;color:#64748b">UID: 981402 • VIP 1</div>
     </div>
-    <div class="wallet-pill">₹<span id="bal">1000.00</span></div>
+    <div class="top-right">
+      <div class="wallet-badge">₹<span id="bal">1000.00</span></div>
+      <button class="icon-btn" onclick="openM('settingModal')" title="Settings">⚙️</button>
+    </div>
   </div>
 
-  <!-- Deposit / Withdraw -->
-  <div class="action-grid">
-    <button class="btn-act btn-dep" onclick="openM('depM')">➕ Deposit (जमा)</button>
-    <button class="btn-act btn-wth" onclick="openM('withM')">➖ Withdraw (निकासी)</button>
+  <!-- Actions -->
+  <div class="actions">
+    <button class="act-btn act-dep" onclick="openM('depM')" id="tDep">➕ Deposit (जमा)</button>
+    <button class="act-btn act-wth" onclick="openM('withM')" id="tWth">➖ Withdraw (निकासी)</button>
   </div>
 
   <!-- Period & Timer -->
-  <div class="round-info">
+  <div class="timer-card">
     <div>
-      <div class="info-sub">Period</div>
+      <div class="sub-txt" id="tPeriodLabel">पीरियड (Period)</div>
       <div class="period-id" id="pId">--</div>
     </div>
     <div style="text-align: right;">
-      <div class="info-sub">Time Remaining</div>
-      <div class="timer-text" id="tBox">00:30</div>
+      <div class="sub-txt" id="tTimeLabel">समय शेष</div>
+      <div class="timer-val" id="tBox">00:30</div>
     </div>
   </div>
 
-  <!-- Secret Admin Section (5 Seasons Advance) -->
-  <div id="adminArea">
-    <div class="adv-title">⚡ 5 सीजन आगे (Advance Results Queue)</div>
+  <!-- 5 Seasons Advance -->
+  <div class="adv-box">
+    <div class="adv-head" id="tAdvHead">⚡ 5 सीजन आगे (Next 5 Results)</div>
     <div class="adv-grid" id="advGrid"></div>
-    <input type="text" id="admInp" class="modal-input" placeholder="नंबर डालें जैसे: 7, 2, 5, 8, 1">
-    <button class="btn-act" style="background:#d97706;width:100%" onclick="setAdmin()">क्यू में सेव करें</button>
   </div>
 
-  <!-- Chips / Multiplier -->
-  <div class="chip-bar" id="betControls1">
+  <!-- Chips -->
+  <div class="chip-bar" id="lockChips">
     <div class="chip" onclick="setChip('Random', this)">Random</div>
     <div class="chip active" onclick="setChip(1, this)">X1</div>
     <div class="chip" onclick="setChip(5, this)">X5</div>
@@ -130,103 +132,199 @@
   </div>
 
   <!-- Colors -->
-  <div class="color-grid" id="betControls2">
-    <button class="c-btn c-green" onclick="bet('Green')">Green</button>
-    <button class="c-btn c-violet" onclick="bet('Violet')">Violet</button>
-    <button class="c-btn c-red" onclick="bet('Red')">Red</button>
+  <div class="c-grid" id="lockColors">
+    <button class="c-btn btn-green" onclick="bet('Green')" id="tGreen">Green</button>
+    <button class="c-btn btn-violet" onclick="bet('Violet')" id="tViolet">Violet</button>
+    <button class="c-btn btn-red" onclick="bet('Red')" id="tRed">Red</button>
   </div>
 
-  <!-- Numbers 0-9 -->
-  <div class="num-grid" id="betControls3">
-    <button class="n-btn num-cv" onclick="bet('0')">0</button>
-    <button class="n-btn num-cg" onclick="bet('1')">1</button>
-    <button class="n-btn num-cr" onclick="bet('2')">2</button>
-    <button class="n-btn num-cg" onclick="bet('3')">3</button>
-    <button class="n-btn num-cr" onclick="bet('4')">4</button>
-    <button class="n-btn num-cv" onclick="bet('5')">5</button>
-    <button class="n-btn num-cr" onclick="bet('6')">6</button>
-    <button class="n-btn num-cg" onclick="bet('7')">7</button>
-    <button class="n-btn num-cr" onclick="bet('8')">8</button>
-    <button class="n-btn num-cg" onclick="bet('9')">9</button>
+  <!-- Numbers -->
+  <div class="n-grid" id="lockNums">
+    <button class="n-btn cv" onclick="bet('0')">0</button>
+    <button class="n-btn cg" onclick="bet('1')">1</button>
+    <button class="n-btn cr" onclick="bet('2')">2</button>
+    <button class="n-btn cg" onclick="bet('3')">3</button>
+    <button class="n-btn cr" onclick="bet('4')">4</button>
+    <button class="n-btn cv" onclick="bet('5')">5</button>
+    <button class="n-btn cr" onclick="bet('6')">6</button>
+    <button class="n-btn cg" onclick="bet('7')">7</button>
+    <button class="n-btn cr" onclick="bet('8')">8</button>
+    <button class="n-btn cg" onclick="bet('9')">9</button>
   </div>
 
-  <!-- Big / Small -->
-  <div class="size-grid" id="betControls4">
-    <button class="btn-big" onclick="bet('Big')">Big (बड़ा)</button>
-    <button class="btn-small" onclick="bet('Small')">Small (छोटा)</button>
+  <!-- Sizes -->
+  <div class="s-grid" id="lockSizes">
+    <button class="btn-big" onclick="bet('Big')" id="tBig">Big (बड़ा)</button>
+    <button class="btn-small" onclick="bet('Small')" id="tSmall">Small (छोटा)</button>
   </div>
 
-  <!-- 3 Tabs: Game history / Chart / My history -->
-  <div class="tabs-bar">
-    <button class="tab-btn active" onclick="switchTab('tabHistory', this)">Game history</button>
-    <button class="tab-btn" onclick="switchTab('tabChart', this)">Chart</button>
-    <button class="tab-btn" onclick="switchTab('tabMy', this)">My history</button>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('paneHist', this)" id="tabH">Game History</button>
+    <button class="tab-btn" onclick="switchTab('paneChart', this)" id="tabC">Chart</button>
+    <button class="tab-btn" onclick="switchTab('paneMy', this)" id="tabM">My History</button>
   </div>
 
-  <!-- Tab 1: Game History -->
-  <div class="tab-pane show" id="tabHistory">
-    <div class="tbl-head">
-      <div>Period</div>
-      <div style="text-align:center">Number</div>
-      <div style="text-align:center">Big/Small</div>
-      <div style="text-align:right">Color</div>
+  <!-- Tab 1 -->
+  <div class="pane active" id="paneHist">
+    <div id="hList" style="display:flex;flex-direction:column;gap:4px"></div>
+  </div>
+
+  <!-- Tab 2 -->
+  <div class="pane" id="paneChart">
+    <div id="cList" style="display:flex;flex-direction:column;gap:4px"></div>
+  </div>
+
+  <!-- Tab 3 -->
+  <div class="pane" id="paneMy">
+    <div id="mList" style="text-align:center;color:#64748b;font-size:12px;padding:20px;">कोई बेट नहीं लगाई गई</div>
+  </div>
+</div>
+
+<!-- Admin Preset Queue -->
+<div class="admin-card">
+  <h4 style="font-size:12px;color:#fbbf24;margin-bottom:6px">⚙️ Admin: अगले 5 सीजन तय करें</h4>
+  <input type="text" id="admInp" placeholder="उदा. 7, 2, 5, 8, 1">
+  <button class="act-btn" style="background:#d97706;width:100%" onclick="setAdmin()">सेव करें</button>
+</div>
+
+<!-- Bottom Nav -->
+<div class="bottom-nav">
+  <div class="nav-item active"><span>🏠</span><span>Home</span></div>
+  <div class="nav-item" onclick="openM('pdfModal')"><span>📄</span><span id="bNavRules">Rules PDF</span></div>
+  <div class="nav-item" onclick="openM('depM')"><span>💳</span><span id="bNavWallet">Wallet</span></div>
+  <div class="nav-item" onclick="openM('settingModal')"><span>⚙️</span><span id="bNavSetting">Setting</span></div>
+</div>
+
+<!-- Setting Modal -->
+<div class="modal" id="settingModal">
+  <div class="modal-box">
+    <h3 style="margin-bottom:12px" id="setHead">⚙️ सेटिंग्स (Settings)</h3>
+    <div class="setting-row">
+      <span id="setLangLabel">भाषा (Language)</span>
+      <select id="langSelect" onchange="changeLang(this.value)" style="background:#1e293b;color:#fff;border:1px solid #334155;padding:4px 8px;border-radius:6px;">
+        <option value="hi" selected>हिन्दी (Hindi)</option>
+        <option value="en">English</option>
+      </select>
     </div>
-    <div id="hList" style="display:flex;flex-direction:column;gap:5px;"></div>
-  </div>
-
-  <!-- Tab 2: Chart -->
-  <div class="tab-pane" id="tabChart">
-    <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">ट्रेंड चार्ट (Trend Analysis)</div>
-    <div id="chartList" style="display:flex;flex-direction:column;gap:4px;"></div>
-  </div>
-
-  <!-- Tab 3: My History -->
-  <div class="tab-pane" id="tabMy">
-    <div style="font-size:11px;color:#94a3b8;margin-bottom:4px">आपकी लगाई गई बोलियाँ</div>
-    <div id="myList" style="display:flex;flex-direction:column;gap:4px;">
-      <div style="text-align:center;color:#64748b;font-size:12px;padding:20px">कोई सक्रिय ऑर्डर नहीं है</div>
+    <div class="setting-row">
+      <span id="setSoundLabel">वॉइस / साउंड (Voice)</span>
+      <button class="act-btn" id="sToggleBtn" style="padding:4px 10px;background:#2563eb" onclick="toggleSound()">🔊 ON</button>
     </div>
+    <div class="setting-row">
+      <span id="setGuideLabel">गेम रूल्स (Rule Book)</span>
+      <button class="act-btn" style="padding:4px 10px;background:#059669" onclick="openM('pdfModal')">📄 View Rules</button>
+    </div>
+    <button class="act-btn" style="background:#475569;width:100%;margin-top:14px" onclick="closeM('settingModal')" id="setCloseBtn">बंद करें</button>
+  </div>
+</div>
+
+<!-- Game Rules PDF Modal -->
+<div class="modal" id="pdfModal">
+  <div class="modal-box" style="max-height:80vh;overflow-y:auto;text-align:left;">
+    <h3 style="margin-bottom:8px;color:#38bdf8" id="ruleHead">📄 Win Game Official Rules</h3>
+    <div id="ruleContent" style="font-size:12px;line-height:1.6;color:#cbd5e1;">
+      <b>1. नियम (Rules):</b><br>
+      - 30 सेकंड का राउंड होता है।<br>
+      - आखिरी 5 सेकंड में बेटिंग लॉक हो जाती है।<br><br>
+      <b>2. पेआउट (Payout):</b><br>
+      - Green (1,3,7,9): 2x रिटर्न<br>
+      - Red (2,4,6,8): 2x रिटर्न<br>
+      - Violet (0,5): 4.5x रिटर्न<br>
+      - Direct Number (0-9): 9x रिटर्न<br>
+      - Big / Small: 2x रिटर्न
+    </div>
+    <button class="act-btn" style="background:#3b82f6;width:100%;margin-top:12px" onclick="closeM('pdfModal')">OK / समझ गया</button>
   </div>
 </div>
 
 <!-- Deposit Modal -->
 <div class="modal" id="depM">
   <div class="modal-box">
-    <h4>डिपॉजिट (Add Money)</h4>
-    <input type="number" id="depAmt" class="modal-input" placeholder="राशि (₹500)">
-    <input type="text" class="modal-input" placeholder="UPI ID / UTR नंबर">
-    <button class="btn-act btn-dep" style="width:100%;margin-top:6px" onclick="addMoney()">पुष्टि करें</button><br><br>
-    <button class="btn-act" style="background:#475569;width:100%" onclick="closeM('depM')">रद्द करें</button>
+    <h4>Deposit</h4>
+    <input type="number" id="depAmt" placeholder="राशि (Amount)">
+    <button class="act-btn act-dep" style="width:100%" onclick="addMoney()">पुष्टि करें</button><br><br>
+    <button class="act-btn" style="background:#475569;width:100%" onclick="closeM('depM')">रद्द करें</button>
   </div>
 </div>
 
 <!-- Withdraw Modal -->
 <div class="modal" id="withM">
   <div class="modal-box">
-    <h4>विड्रॉल (निकासी)</h4>
-    <input type="number" id="wAmt" class="modal-input" placeholder="निकासी राशि (₹300)">
-    <input type="text" class="modal-input" placeholder="बैंक खाता / UPI ID">
-    <button class="btn-act btn-wth" style="width:100%;margin-top:6px" onclick="subMoney()">विड्रॉल लगाएं</button><br><br>
-    <button class="btn-act" style="background:#475569;width:100%" onclick="closeM('withM')">रद्द करें</button>
+    <h4>Withdrawal</h4>
+    <input type="number" id="wAmt" placeholder="निकासी राशि">
+    <button class="act-btn act-wth" style="width:100%" onclick="subMoney()">विड्रॉल लगाएं</button><br><br>
+    <button class="act-btn" style="background:#475569;width:100%" onclick="closeM('withM')">रद्द करें</button>
   </div>
 </div>
 
 <script>
-  var bal = 1000;
-  var sec = 30;
-  var seq = 1350;
-  var multiplier = 1;
-  var queue = [];
-  var myBets = [];
-
-  // Secret Admin check from URL (?admin=786)
-  var urlParams = new URLSearchParams(window.location.search);
-  if(urlParams.get('admin') === '786') {
-    document.getElementById('adminArea').style.display = 'block';
-  }
+  var bal = 1000, sec = 30, seq = 1350, multiplier = 1, currentLang = 'hi', soundOn = true;
+  var queue = [], myBets = [];
 
   function openM(id){ document.getElementById(id).style.display = 'flex'; }
   function closeM(id){ document.getElementById(id).style.display = 'none'; }
+
+  function changeLang(val) {
+    currentLang = val;
+    if(currentLang === 'en') {
+      document.getElementById('tDep').innerText = '➕ Deposit';
+      document.getElementById('tWth').innerText = '➖ Withdraw';
+      document.getElementById('tPeriodLabel').innerText = 'Period';
+      document.getElementById('tTimeLabel').innerText = 'Time Left';
+      document.getElementById('tAdvHead').innerText = '⚡ Next 5 Results (Advance)';
+      document.getElementById('tBig').innerText = 'Big';
+      document.getElementById('tSmall').innerText = 'Small';
+      document.getElementById('tabH').innerText = 'Game History';
+      document.getElementById('tabC').innerText = 'Chart';
+      document.getElementById('tabM').innerText = 'My Orders';
+      document.getElementById('setHead').innerText = '⚙️ Settings';
+      document.getElementById('setLangLabel').innerText = 'Language';
+      document.getElementById('setSoundLabel').innerText = 'Voice Announcement';
+      document.getElementById('setGuideLabel').innerText = 'Rule Book';
+      document.getElementById('setCloseBtn').innerText = 'Close';
+      document.getElementById('bNavRules').innerText = 'Rules PDF';
+      document.getElementById('bNavWallet').innerText = 'Wallet';
+      document.getElementById('bNavSetting').innerText = 'Setting';
+      document.getElementById('ruleHead').innerText = '📄 Win Game Official Rules';
+      document.getElementById('ruleContent').innerHTML = '<b>1. Rules:</b><br>- 30 seconds round.<br>- Betting locks in last 5 seconds.<br><br><b>2. Payout:</b><br>- Green (1,3,7,9): 2x return<br>- Red (2,4,6,8): 2x return<br>- Violet (0,5): 4.5x return<br>- Single Number (0-9): 9x return<br>- Big / Small: 2x return';
+    } else {
+      document.getElementById('tDep').innerText = '➕ Deposit (जमा)';
+      document.getElementById('tWth').innerText = '➖ Withdraw (निकासी)';
+      document.getElementById('tPeriodLabel').innerText = 'पीरियड (Period)';
+      document.getElementById('tTimeLabel').innerText = 'समय शेष';
+      document.getElementById('tAdvHead').innerText = '⚡ 5 सीजन आगे (Next 5 Results)';
+      document.getElementById('tBig').innerText = 'Big (बड़ा)';
+      document.getElementById('tSmall').innerText = 'Small (छोटा)';
+      document.getElementById('tabH').innerText = 'Game History';
+      document.getElementById('tabC').innerText = 'Chart';
+      document.getElementById('tabM').innerText = 'My History';
+      document.getElementById('setHead').innerText = '⚙️ सेटिंग्स (Settings)';
+      document.getElementById('setLangLabel').innerText = 'भाषा (Language)';
+      document.getElementById('setSoundLabel').innerText = 'वॉइस / साउंड (Voice)';
+      document.getElementById('setGuideLabel').innerText = 'गेम रूल्स (Rule Book)';
+      document.getElementById('setCloseBtn').innerText = 'बंद करें';
+      document.getElementById('bNavRules').innerText = 'Rules PDF';
+      document.getElementById('bNavWallet').innerText = 'Wallet';
+      document.getElementById('bNavSetting').innerText = 'Setting';
+      document.getElementById('ruleHead').innerText = '📄 Win Game Official Rules';
+      document.getElementById('ruleContent').innerHTML = '<b>1. नियम (Rules):</b><br>- 30 सेकंड का राउंड होता है।<br>- आखिरी 5 सेकंड में बेटिंग लॉक हो जाती है।<br><br><b>2. पेआउट (Payout):</b><br>- Green (1,3,7,9): 2x रिटर्न<br>- Red (2,4,6,8): 2x रिटर्न<br>- Violet (0,5): 4.5x रिटर्न<br>- Direct Number (0-9): 9x रिटर्न<br>- Big / Small: 2x रिटर्न';
+    }
+  }
+
+  function toggleSound() {
+    soundOn = !soundOn;
+    document.getElementById('sToggleBtn').innerText = soundOn ? '🔊 ON' : '🔇 OFF';
+    document.getElementById('sToggleBtn').style.background = soundOn ? '#2563eb' : '#64748b';
+  }
+
+  function speakText(txt) {
+    if(soundOn && 'speechSynthesis' in window) {
+      var u = new SpeechSynthesisUtterance(txt);
+      u.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
+      window.speechSynthesis.speak(u);
+    }
+  }
 
   function addMoney(){
     var a = Number(document.getElementById('depAmt').value);
@@ -235,145 +333,41 @@
   function subMoney(){
     var a = Number(document.getElementById('wAmt').value);
     if(a > 0 && a <= bal){ bal -= a; document.getElementById('bal').innerText = bal.toFixed(2); closeM('withM'); }
-    else alert('अपर्याप्त बैलेंस!');
+    else alert('कम बैलेंस!');
   }
 
   function setChip(val, el){
-    if(val === 'Random'){
-      var opts = [1, 5, 10, 20, 50, 100];
-      multiplier = opts[Math.floor(Math.random() * opts.length)];
-    } else {
-      multiplier = val;
-    }
+    multiplier = val === 'Random' ? [1,5,10,20,50,100][Math.floor(Math.random()*6)] : val;
     document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
     el.classList.add('active');
   }
 
-  function bet(choice){
-    var betCost = 10 * multiplier;
-    if(sec <= 5){ alert('समय समाप्त! अगले राउंड का इंतजार करें।'); return; }
-    if(bal >= betCost){
-      bal -= betCost;
+  function bet(x){
+    var cost = 10 * multiplier;
+    if(sec <= 5) return;
+    if(bal >= cost){
+      bal -= cost;
       document.getElementById('bal').innerText = bal.toFixed(2);
-      myBets.push({ period: getP(seq), choice: choice, cost: betCost });
-      renderMyHistory();
-      alert('₹' + betCost + ' का दांव लगा: ' + choice);
+      myBets.push({ period: getP(seq), choice: x, cost: cost });
+      renderMy();
+      alert((currentLang === 'hi' ? 'दांव लगा: ' : 'Bet Placed: ') + x + ' (₹' + cost + ')');
     } else {
-      alert('बैलेंस कम है!');
+      alert(currentLang === 'hi' ? 'बैलेंस कम है!' : 'Insufficient Balance!');
     }
   }
 
-  function switchTab(tabId, el){
-    document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('show'); });
+  function switchTab(id, el){
+    document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('active'); });
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-    document.getElementById(tabId).classList.add('show');
+    document.getElementById(id).classList.add('active');
     el.classList.add('active');
   }
 
   function getP(s){
-    var d = new Date();
-    var ymd = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+    var d = new Date(), ymd = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
     return ymd + "0005" + s;
   }
 
   function getD(n){
-    var sz = n >= 5 ? 'Big' : 'Small';
-    var c = 'num-cr', dot = '<span class="dot bg-r"></span>', cText = 'Red';
-    if(n === 0){ c = 'num-cv'; dot = '<span class="dot bg-r"></span><span class="dot bg-v"></span>'; cText = 'Red+Violet'; }
-    else if(n === 5){ c = 'num-cv'; dot = '<span class="dot bg-g"></span><span class="dot bg-v"></span>'; cText = 'Green+Violet'; }
-    else if([1,3,7,9].indexOf(n) !== -1){ c = 'num-cg'; dot = '<span class="dot bg-g"></span>'; cText = 'Green'; }
-    return { sz: sz, c: c, dot: dot, cText: cText };
-  }
-
-  function fillQ(){
-    while(queue.length < 5){
-      queue.push(Math.floor(Math.random() * 10));
-    }
-    var g = document.getElementById('advGrid');
-    g.innerHTML = '';
-    for(var i = 0; i < queue.length; i++){
-      var num = queue[i];
-      var d = getD(num);
-      g.innerHTML += '<div class="adv-item"><div style="font-size:9px;color:#94a3b8">+' + (i+1) + '</div><div class="' + d.c + '" style="font-size:15px;font-weight:800">' + num + '</div><div style="font-size:9px">' + d.sz + '</div></div>';
-    }
-  }
-
-  function runRound(){
-    var win = queue.shift();
-    fillQ();
-    var d = getD(win);
-    var pStr = getP(seq);
-
-    // 1. History Row
-    var r = document.createElement('div');
-    r.className = 'row-item';
-    r.innerHTML = '<div>' + pStr + '</div><div class="' + d.c + '" style="text-align:center;font-weight:800">' + win + '</div><div style="text-align:center">' + d.sz + '</div><div style="text-align:right">' + d.dot + '</div>';
-    document.getElementById('hList').prepend(r);
-
-    // 2. Chart Row
-    var cr = document.createElement('div');
-    cr.className = 'chart-row';
-    cr.innerHTML = '<div>' + pStr + '</div><div class="' + d.c + '" style="font-weight:800">' + win + ' (' + d.sz + ')</div><div>' + d.dot + ' ' + d.cText + '</div>';
-    document.getElementById('chartList').prepend(cr);
-
-    seq++;
-    document.getElementById('pId').innerText = getP(seq);
-  }
-
-  function renderMyHistory(){
-    var m = document.getElementById('myList');
-    if(myBets.length > 0) m.innerHTML = '';
-    for(var i = myBets.length - 1; i >= 0; i--){
-      var b = myBets[i];
-      m.innerHTML += '<div class="chart-row"><div>' + b.period + '</div><div>चयन: <b>' + b.choice + '</b></div><div style="color:#facc15">₹' + b.cost + '</div></div>';
-    }
-  }
-
-  function setAdmin(){
-    var v = document.getElementById('admInp').value;
-    if(v.trim()){
-      var parts = v.split(',');
-      var arr = [];
-      for(var i = 0; i < parts.length; i++){
-        var n = Number(parts[i].trim());
-        if(!isNaN(n) && n >= 0 && n <= 9) arr.push(n);
-      }
-      if(arr.length > 0){
-        queue = arr.concat(queue).slice(0, 5);
-        fillQ();
-        document.getElementById('admInp').value = '';
-      }
-    }
-  }
-
-  // Init
-  fillQ();
-  document.getElementById('pId').innerText = getP(seq);
-  for(var k = 0; k < 3; k++){ runRound(); }
-
-  // 30s Loop
-  setInterval(function(){
-    sec--;
-    if(sec <= 5 && sec > 0){
-      document.getElementById('tBox').classList.add('timer-danger');
-      ['betControls1','betControls2','betControls3','betControls4'].forEach(function(id){
-        document.getElementById(id).classList.add('disabled-bet');
-      });
-    } else {
-      document.getElementById('tBox').classList.remove('timer-danger');
-      ['betControls1','betControls2','betControls3','betControls4'].forEach(function(id){
-        document.getElementById(id).classList.remove('disabled-bet');
-      });
-    }
-
-    if(sec < 0){
-      runRound();
-      sec = 30;
-    }
-    document.getElementById('tBox').innerText = '00:' + (sec < 10 ? '0' + sec : sec);
-  }, 1000);
-</script>
-
-</body>
-      </html>
-  
+    var sz = n >= 5 ? 'Big' : 'Small', c = 'cr', dot = '<span class="dot bg-r"></span>';
+    if(n === 0){ c = 'cv'; dot = '<span class="dot bg-r"></span>
