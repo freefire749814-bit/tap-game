@@ -6,56 +6,156 @@
   <title>विन गेम - Win Game</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; user-select: none; }
-    body { background-color: #090e1a; color: #fff; display: flex; flex-direction: column; align-items: center; padding: 10px; gap: 12px; }
-    .app-container { width: 100%; max-width: 440px; background-color: #111927; border-radius: 16px; padding: 14px; border: 1px solid #1e293b; }
-    .header-bar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1e293b; }
-    .logo-title { font-size: 20px; font-weight: 900; color: #38bdf8; }
-    .user-uid { font-size: 11px; color: #64748b; }
-    .wallet-pill { background: #1e293b; padding: 6px 14px; border-radius: 20px; color: #facc15; font-size: 15px; font-weight: 700; border: 1px solid #334155; }
-    .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
-    .btn-action { border: none; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 14px; color: #fff; cursor: pointer; }
-    .btn-deposit { background: #10b981; }
-    .btn-withdraw { background: #ef4444; }
-    .round-card { display: flex; justify-content: space-between; align-items: center; background: #1e293b; border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; }
-    .period-title { font-size: 11px; color: #94a3b8; }
-    .period-id { font-size: 15px; font-weight: 700; color: #38bdf8; margin-top: 2px; }
-    .timer-digits { font-size: 26px; font-weight: 800; color: #facc15; }
-    .advance-box { border: 1px solid #3b82f6; background: rgba(30,58,138,0.2); border-radius: 12px; padding: 10px; margin-bottom: 14px; }
-    .adv-header { font-size: 12px; font-weight: 700; color: #60a5fa; margin-bottom: 8px; }
-    .adv-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-    .adv-item { background: #172540; border-radius: 8px; padding: 6px 2px; text-align: center; }
-    .adv-round { font-size: 9px; color: #94a3b8; }
-    .adv-num { font-size: 16px; font-weight: 800; margin: 2px 0; }
-    .adv-size { font-size: 10px; font-weight: 600; }
-    .color-bet-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-    .bet-btn { padding: 10px 4px; border-radius: 8px; border: none; font-weight: 800; color: #fff; cursor: pointer; }
-    .btn-green { background: #10b981; }
-    .btn-violet { background: #8b5cf6; }
-    .btn-red { background: #ef4444; }
-    .numbers-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 10px; }
-    .num-btn { background: #1e293b; border: 1px solid #334155; color: white; padding: 9px; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; }
-    .size-bet-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-    .btn-big { background: #f59e0b; color: #1e293b; font-size: 16px; font-weight: 800; padding: 10px; border-radius: 8px; border: none; }
-    .btn-small { background: #3b82f6; color: white; font-size: 16px; font-weight: 800; padding: 10px; border-radius: 8px; border: none; }
-    .table-head { display: grid; grid-template-columns: 2fr 1fr 1.2fr 1.2fr; padding: 8px 10px; color: #64748b; font-size: 12px; border-bottom: 1px solid #1e293b; }
-    .records-list { display: flex; flex-direction: column; gap: 6px; max-height: 250px; overflow-y: auto; margin-top: 6px; }
-    .row-item { display: grid; grid-template-columns: 2fr 1fr 1.2fr 1.2fr; align-items: center; padding: 8px 10px; background: #162032; border-radius: 8px; font-size: 13px; }
-    .rec-period { color: #94a3b8; font-size: 12px; }
-    .rec-num { font-size: 17px; font-weight: 800; text-align: center; }
-    .rec-size { font-weight: 700; text-align: center; }
-    .rec-dots { display: flex; justify-content: flex-end; gap: 4px; }
-    .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-    .bg-g { background-color: #10b981; }
-    .bg-r { background-color: #ef4444; }
-    .bg-v { background-color: #a855f7; }
-    .c-green { color: #10b981; }
-    .c-red { color: #ef4444; }
-    .c-mix { color: #ec4899; }
-    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; padding: 16px; z-index: 100; }
-    .modal-box { width: 100%; max-width: 380px; background: #111827; border: 1px solid #374151; border-radius: 14px; padding: 18px; }
-    .modal-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #374151; background: #1f2937; color: white; margin-bottom: 10px; }
-    .admin-card { width: 100%; max-width: 440px; background: #141f36; border: 1px dashed #f59e0b; border-radius: 12px; padding: 12px; }
+    body { background: #090e1a; color: #fff; display: flex; flex-direction: column; align-items: center; padding: 10px; gap: 10px; }
+    .box { width: 100%; max-width: 420px; background: #111927; border-radius: 14px; padding: 12px; border: 1px solid #1e293b; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .logo { font-size: 18px; font-weight: 800; color: #38bdf8; }
+    .bal { background: #1e293b; padding: 5px 12px; border-radius: 15px; color: #facc15; font-weight: 700; font-size: 14px; }
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .btn { padding: 8px; border: none; border-radius: 6px; font-weight: 700; color: #fff; cursor: pointer; text-align: center; font-size: 13px; }
+    .timer-card { display: flex; justify-content: space-between; align-items: center; background: #1e293b; padding: 10px 12px; border-radius: 8px; margin-bottom: 10px; }
+    .adv-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin: 8px 0; background: rgba(30,58,138,0.2); padding: 8px; border-radius: 8px; }
+    .adv-item { background: #172540; padding: 4px; border-radius: 6px; text-align: center; }
+    .c-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+    .n-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 8px; }
+    .n-btn { background: #1e293b; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 6px; font-weight: 800; font-size: 15px; cursor: pointer; }
+    .s-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 6px 8px; background: #162032; border-radius: 6px; margin-top: 4px; font-size: 12px; align-items: center; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .bg-g { background: #10b981; } .bg-r { background: #ef4444; } .bg-v { background: #a855f7; }
+    .cg { color: #10b981; } .cr { color: #ef4444; } .cv { color: #ec4899; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; padding: 20px; }
+    .modal-content { background: #111927; padding: 16px; border-radius: 10px; width: 100%; max-width: 320px; text-align: center; }
+    input { width: 100%; padding: 8px; margin: 6px 0; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px; }
   </style>
 </head>
 <body>
-  
+
+<div class="box">
+  <div class="header">
+    <div><div class="logo">🎮 विन गेम (Win Game)</div><div style="font-size:10px;color:#64748b">UID: 981402</div></div>
+    <div class="bal">₹<span id="bal">1000.00</span></div>
+  </div>
+
+  <div class="actions">
+    <button class="btn" style="background:#10b981" onclick="openM('depM')">➕ Deposit</button>
+    <button class="btn" style="background:#ef4444" onclick="openM('withM')">➖ Withdraw</button>
+  </div>
+
+  <div class="timer-card">
+    <div><div style="font-size:10px;color:#94a3b8">पीरियड (Period)</div><div id="pId" style="font-weight:700;color:#38bdf8">--</div></div>
+    <div style="text-align:right"><div style="font-size:10px;color:#94a3b8">समय शेष</div><div id="tBox" style="font-size:22px;font-weight:800;color:#facc15">00:30</div></div>
+  </div>
+
+  <div style="font-size:11px;color:#60a5fa;font-weight:700">⚡ 5 सीजन आगे (Next 5 Results)</div>
+  <div class="adv-grid" id="advGrid"></div>
+
+  <div class="c-grid">
+    <button class="btn" style="background:#10b981" onclick="bet('Green')">Green</button>
+    <button class="btn" style="background:#8b5cf6" onclick="bet('Violet')">Violet</button>
+    <button class="btn" style="background:#ef4444" onclick="bet('Red')">Red</button>
+  </div>
+
+  <div class="n-grid">
+    <button class="n-btn cv" onclick="bet('0')">0</button><button class="n-btn cg" onclick="bet('1')">1</button>
+    <button class="n-btn cr" onclick="bet('2')">2</button><button class="n-btn cg" onclick="bet('3')">3</button>
+    <button class="n-btn cr" onclick="bet('4')">4</button><button class="n-btn cv" onclick="bet('5')">5</button>
+    <button class="n-btn cr" onclick="bet('6')">6</button><button class="n-btn cg" onclick="bet('7')">7</button>
+    <button class="n-btn cr" onclick="bet('8')">8</button><button class="n-btn cg" onclick="bet('9')">9</button>
+  </div>
+
+  <div class="s-grid">
+    <button class="btn" style="background:#f59e0b" onclick="bet('Big')">Big</button>
+    <button class="btn" style="background:#3b82f6" onclick="bet('Small')">Small</button>
+  </div>
+
+  <div style="font-size:12px;color:#94a3b8;margin:8px 0 4px">Game History (रिकॉर्ड्स)</div>
+  <div id="hList"></div>
+</div>
+
+<!-- Admin -->
+<div class="box" style="border:1px dashed #f59e0b">
+  <div style="font-size:11px;color:#fbbf24;font-weight:700;margin-bottom:4px">⚙️ Admin: अगले 5 नंबर सेट करें</div>
+  <input type="text" id="admInp" placeholder="उदा. 7, 2, 5, 8, 1">
+  <button class="btn" style="background:#d97706;width:100%" onclick="setAdmin()">सेव करें</button>
+</div>
+
+<!-- Modals -->
+<div class="modal" id="depM">
+  <div class="modal-content">
+    <h4>डिपॉजिट (Add Money)</h4>
+    <input type="number" id="depAmt" placeholder="राशि दर्ज करें">
+    <button class="btn" style="background:#10b981;width:100%;margin-top:6px" onclick="addMoney()">जमा करें</button><br><br>
+    <button class="btn" style="background:#475569;width:100%" onclick="closeM('depM')">बंद करें</button>
+  </div>
+</div>
+
+<div class="modal" id="withM">
+  <div class="modal-content">
+    <h4>विड्रॉल (Withdraw)</h4>
+    <input type="number" id="wAmt" placeholder="निकासी राशि">
+    <button class="btn" style="background:#ef4444;width:100%;margin-top:6px" onclick="subMoney()">निकासी करें</button><br><br>
+    <button class="btn" style="background:#475569;width:100%" onclick="closeM('withM')">बंद करें</button>
+  </div>
+</div>
+
+<script>
+  let bal = 1000, sec = 30, seq = 1350, queue = [];
+  function openM(id){ document.getElementById(id).style.display='flex'; }
+  function closeM(id){ document.getElementById(id).style.display='none'; }
+  function addMoney(){
+    let a = +document.getElementById('depAmt').value;
+    if(a > 0){ bal += a; document.getElementById('bal').innerText = bal.toFixed(2); closeM('depM'); }
+  }
+  function subMoney(){
+    let a = +document.getElementById('wAmt').value;
+    if(a > 0 && a <= bal){ bal -= a; document.getElementById('bal').innerText = bal.toFixed(2); closeM('withM'); }
+  }
+  function bet(x){
+    if(bal >= 10){ bal -= 10; document.getElementById('bal').innerText = bal.toFixed(2); alert('₹10 का दांव लगा: ' + x); }
+    else alert('बैलेंस कम है!');
+  }
+  function getP(s){
+    let d = new Date(), y = d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+    return y + "0005" + s;
+  }
+  function getD(n){
+    let sz = n >= 5 ? 'Big' : 'Small', c = 'cr', dot = '<span class="dot bg-r"></span>';
+    if(n === 0){ c = 'cv'; dot = '<span class="dot bg-r"></span><span class="dot bg-v"></span>'; }
+    else if(n === 5){ c = 'cv'; dot = '<span class="dot bg-g"></span><span class="dot bg-v"></span>'; }
+    else if([1,3,7,9].includes(n)){ c = 'cg'; dot = '<span class="dot bg-g"></span>'; }
+    return { sz, c, dot };
+  }
+  function fillQ(){
+    while(queue.length < 5) queue.push(Math.floor(Math.random()*10));
+    let g = document.getElementById('advGrid'); g.innerHTML = '';
+    queue.forEach((n, i) => {
+      let d = getD(n);
+      g.innerHTML += `<div class="adv-item"><div style="font-size:9px;color:#94a3b8">+${i+1}</div><div class="${d.c}" style="font-size:15px;font-weight:800">${n}</div><div style="font-size:9px">${d.sz}</div></div>`;
+    });
+  }
+  function runRound(){
+    let win = queue.shift(); fillQ();
+    let d = getD(win);
+    let r = document.createElement('div'); r.className = 'row';
+    r.innerHTML = `<div>${getP(seq)}</div><div class="${d.c}" style="text-align:center;font-weight:800">${win}</div><div style="text-align:center">${d.sz}</div><div style="text-align:right">${d.dot}</div>`;
+    document.getElementById('hList').prepend(r);
+    seq++; document.getElementById('pId').innerText = getP(seq);
+  }
+  function setAdmin(){
+    let v = document.getElementById('admInp').value;
+    if(v.trim()){
+      let arr = v.split(',').map(x=>+x.trim()).filter(x=>!isNaN(x)&&x>=0&&x<=9);
+      if(arr.length){ queue = arr.concat(queue).slice(0,5); fillQ(); document.getElementById('admInp').value=''; }
+    }
+  }
+  fillQ(); document.getElementById('pId').innerText = getP(seq);
+  for(let i=0; i<3; i++) runRound();
+  setInterval(() => {
+    sec--;
+    if(sec < 0){ runRound(); sec = 30; }
+    document.getElementById('tBox').innerText = '00:' + (sec < 10 ? '0' + sec : sec);
+  }, 1000);
+</script>
+</body>
+</html>
