@@ -2,354 +2,196 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Global Tap Battle</title>
+  <title>Color Prediction Game UI</title>
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; padding: 10px; background: #070b14; color: #ffffff; text-align: center; }
-    .container { max-width: 420px; margin: auto; }
-    h1 { font-size: 19px; margin: 4px 0 8px 0; color: #f59e0b; letter-spacing: 1px; }
-
-    /* टाइमर */
-    .timer-box {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #111827;
-      border: 1px solid #1f2937;
-      padding: 8px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      margin-bottom: 8px;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
     }
-    .timer-num { color: #ef4444; font-weight: 900; font-size: 15px; font-variant-numeric: tabular-nums; }
-
-    /* प्राइज़ पूल */
-    .prize-card {
-      background: #0f172a;
+    body {
+      background-color: #0f172a;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .game-container {
+      width: 100%;
+      max-width: 420px;
+      background-color: #111827;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    /* Timer Card */
+    .timer-card {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
       border: 1px solid #334155;
       border-radius: 10px;
-      padding: 8px 10px;
-      margin-bottom: 8px;
-      text-align: left;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 20px;
     }
-    .prize-head { font-size: 12px; font-weight: bold; color: #fbbf24; display: flex; justify-content: space-between; margin-bottom: 6px; }
-    .prize-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
-    .p-item { background: #1e293b; padding: 5px; border-radius: 6px; }
-    .p-item.top { border: 1px solid #f59e0b; background: rgba(245, 158, 11, 0.15); }
-    .p-rank { font-size: 11px; color: #94a3b8; }
-    .p-cash { font-size: 13px; font-weight: 900; color: #4ade80; }
-    .p-other { font-size: 11px; color: #cbd5e1; display: flex; justify-content: space-between; margin-top: 5px; background: #090d16; padding: 4px 8px; border-radius: 4px; }
-
-    /* स्कोर कार्ड */
-    .score-box {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #1e293b;
-      padding: 8px 14px;
-      border-radius: 10px;
-      margin-bottom: 8px;
+    .timer-card h3 {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-bottom: 6px;
     }
-    .s-left { text-align: left; font-size: 12px; }
-    .s-score { font-size: 26px; font-weight: 900; color: #f59e0b; }
-
-    /* सीमा प्रोग्रेस */
-    .limit-box {
-      display: flex;
-      justify-content: space-between;
-      background: #0d1527;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      margin-bottom: 8px;
-      border: 1px solid #1e293b;
-    }
-
-    /* टास्क बटन */
-    .task-btn {
-      width: 100%;
-      background: linear-gradient(90deg, #4f46e5, #7c3aed);
-      border: none;
-      color: #fff;
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 13px;
+    .timer-display {
+      font-size: 32px;
       font-weight: bold;
+      color: #38bdf8;
+      letter-spacing: 2px;
+    }
+    /* History Table */
+    .history-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      padding: 10px 14px;
+      color: #94a3b8;
+      font-size: 14px;
+      border-bottom: 1px solid #1f2937;
       margin-bottom: 8px;
-      cursor: pointer;
     }
-
-    /* शेयर बटन */
-    .share-btn {
-      width: 100%;
-      background: linear-gradient(90deg, #059669, #10b981);
-      border: none;
-      color: #fff;
-      padding: 9px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-bottom: 12px;
-    }
-
-    /* मुख्य टैप बटन */
-    .tap-wrap { margin: 8px 0 14px 0; }
-    .tap-main {
-      width: 160px;
-      height: 160px;
-      border-radius: 50%;
-      border: 6px solid #ea580c;
-      background: radial-gradient(circle, #f97316 0%, #b91c1c 100%);
-      color: #fff;
-      font-size: 24px;
-      font-weight: 900;
-      cursor: pointer;
-      outline: none;
-      box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
+    .history-list {
       display: flex;
       flex-direction: column;
+      gap: 10px;
+      max-height: 480px;
+      overflow-y: auto;
+    }
+    .row-item {
+      display: flex;
       align-items: center;
-      justify-content: center;
-      margin: auto;
-      transition: all 0.2s ease;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background-color: #1e293b;
+      border-radius: 8px;
+      animation: fadeIn 0.4s ease-in-out;
     }
-    .tap-main:active { transform: scale(0.92); }
-    .tap-main.locked {
-      background: #334155 !important;
-      border-color: #64748b !important;
-      box-shadow: none !important;
-      cursor: not-allowed;
-      opacity: 0.75;
-      transform: none !important;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .tap-sub { font-size: 11px; font-weight: normal; opacity: 0.85; margin-top: 2px; }
-
-    /* सूचना पट्टी */
-    #alertBanner {
-      display: none;
-      background: #b91c1c;
-      color: #fef2f2;
-      padding: 7px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: bold;
-      margin-bottom: 8px;
+    .col-number {
+      font-size: 24px;
+      font-weight: 800;
+      width: 40px;
     }
+    .col-size {
+      font-size: 18px;
+      font-weight: 600;
+      color: #f1f5f9;
+      flex: 1;
+      text-align: center;
+    }
+    .col-color {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+      width: 60px;
+    }
+    /* Dots */
+    .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .bg-green { background-color: #22c55e; }
+    .bg-red { background-color: #ef4444; }
+    .bg-violet { background-color: #a855f7; }
+    
+    .text-green { color: #22c55e; }
+    .text-red { color: #ef4444; }
+    .text-violet-mix { color: #ec4899; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>⚡ GLOBAL TAP TOURNAMENT ⚡</h1>
-
-    <!-- 1. टाइमर -->
-    <div class="timer-box">
-      <span>🏆 <b id="rndTitle">राउंड 1 (500 टैप)</b></span>
-      <span>⏳ शेष समय: <span class="timer-num" id="timeTxt">00:00:00</span></span>
-    </div>
-
-    <!-- 2. प्राइज़ पूल -->
-    <div class="prize-card">
-      <div class="prize-head">
-        <span>🎁 टूर्नामेंट प्राइज़ पूल</span>
-        <span style="color: #4ade80;">कुल ₹2,000</span>
-      </div>
-      <div class="prize-row">
-        <div class="p-item top">
-          <div class="p-rank">🥇 1st</div>
-          <div class="p-cash">₹1,000</div>
-        </div>
-        <div class="p-item">
-          <div class="p-rank">🥈 2nd</div>
-          <div class="p-cash">₹500</div>
-        </div>
-        <div class="p-item">
-          <div class="p-rank">🥉 3rd</div>
-          <div class="p-cash">₹250</div>
-        </div>
-      </div>
-      <div class="p-other">
-        <span><b>4th:</b> ₹100</span>
-        <span><b>5th:</b> ₹50</span>
-        <span><b>6th-10th:</b> ₹20 प्रत्येक</span>
-      </div>
-    </div>
-
-    <!-- 3. स्कोर बोर्ड -->
-    <div class="score-box">
-      <div class="s-left">
-        <div style="font-weight: bold; color: #38bdf8;">खिलाड़ी</div>
-        <div style="color: #94a3b8;">रैंक: <b style="color: #4ade80;">#1 (जीतेगा ₹1,000)</b></div>
-      </div>
-      <div class="s-score" id="scoreVal">0</div>
-    </div>
-
-    <!-- 4. सीमा प्रोग्रेस -->
-    <div class="limit-box">
-      <span>🎯 राउंड लिमिट: <b id="limitCap" style="color: #38bdf8;">500</b></span>
-      <span>प्रगति: <b id="progressTxt" style="color: #fde047;">0 / 500</b></span>
-    </div>
-
-    <div id="alertBanner"></div>
-
-    <!-- 5. रिवॉर्ड टास्क बटन -->
-    <button class="task-btn" onclick="doTask()">
-      <span id="taskBtnTxt">📺 ऐड देखें (0/2)</span>
-      <span style="background: #fde047; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 11px;">+500 TAPS</span>
-    </button>
-
-    <!-- 6. शेयर बटन -->
-    <button class="share-btn" onclick="shareGame()">
-      🚀 दोस्तों को शेयर करें (Invite Friends)
-    </button>
-
-    <!-- 7. मुख्य टैप बटन -->
-    <div class="tap-wrap">
-      <button class="tap-main" id="btnTap" onclick="addTap()">
-        <span id="tapMainTitle">TAP! 🔥</span>
-        <span class="tap-sub" id="tapSub">दबाते रहो</span>
-      </button>
-    </div>
+<div class="game-container">
+  <!-- Timer Box -->
+  <div class="timer-card">
+    <h3>अगला परिणाम आने में समय</h3>
+    <div class="timer-display" id="timer">00:30</div>
   </div>
 
-  <script>
-    // राउंड नियम (राउंड 1 = 500 टैप / 2h, राउंड 2 = 1500 टैप / 3h, राउंड 3 = 2500 टैप / 3h)
-    var rounds = [
-      { limit: 500, waitMs: 2 * 60 * 60 * 1000, label: "राउंड 1 (500 टैप)" },
-      { limit: 1500, waitMs: 3 * 60 * 60 * 1000, label: "राउंड 2 (1500 टैप)" },
-      { limit: 2500, waitMs: 3 * 60 * 60 * 1000, label: "राउंड 3 (2500 टैप)" }
-    ];
+  <!-- Header -->
+  <div class="history-header">
+    <span>नंबर</span>
+    <span>साइज</span>
+    <span>कलर</span>
+  </div>
 
-    // क्लीन स्टेट लोड करना
-    var score = parseInt(localStorage.getItem("fix_score") || "0");
-    var roundIdx = parseInt(localStorage.getItem("fix_rnd") || "0");
-    var roundTaps = parseInt(localStorage.getItem("fix_taps") || "0");
-    var unlockTime = parseInt(localStorage.getItem("fix_unlock") || "0");
-    var adCount = parseInt(localStorage.getItem("fix_ads") || "0");
+  <!-- Result List -->
+  <div class="history-list" id="historyList">
+    <!-- रैंडम रिजल्ट यहाँ अपने आप जुड़ेंगे -->
+  </div>
+</div>
 
-    function saveState() {
-      localStorage.setItem("fix_score", score);
-      localStorage.setItem("fix_rnd", roundIdx);
-      localStorage.setItem("fix_taps", roundTaps);
-      localStorage.setItem("fix_unlock", unlockTime);
-      localStorage.setItem("fix_ads", adCount);
+<script>
+  let timeLeft = 30;
+  const timerElement = document.getElementById('timer');
+  const historyList = document.getElementById('historyList');
+
+  // नया रैंडम रिजल्ट बनाने का लॉजिक
+  function generateRandomResult() {
+    // 0 से 9 तक रैंडम नंबर
+    const num = Math.floor(Math.random() * 10);
+    
+    // 5 या उससे ऊपर Big, बाकी Small
+    const size = num >= 5 ? 'Big' : 'Small';
+
+    let numClass = '';
+    let colorDots = '';
+
+    // गेम के नियम अनुसार कलर लॉजिक
+    if (num === 0) {
+      numClass = 'text-violet-mix';
+      colorDots = '<span class="dot bg-red"></span><span class="dot bg-violet"></span>';
+    } else if (num === 5) {
+      numClass = 'text-violet-mix';
+      colorDots = '<span class="dot bg-green"></span><span class="dot bg-violet"></span>';
+    } else if ([1, 3, 7, 9].includes(num)) {
+      numClass = 'text-green';
+      colorDots = '<span class="dot bg-green"></span>';
+    } else {
+      numClass = 'text-red';
+      colorDots = '<span class="dot bg-red"></span>';
     }
 
-    function showAlert(msg) {
-      var b = document.getElementById("alertBanner");
-      b.innerText = msg;
-      b.style.display = "block";
-      setTimeout(function() { b.style.display = "none"; }, 3000);
+    // नया रिकॉर्ड सबसे ऊपर ऐड करना
+    const row = document.createElement('div');
+    row.className = 'row-item';
+    row.innerHTML = `
+      <div class="col-number ${numClass}">${num}</div>
+      <div class="col-size">${size}</div>
+      <div class="col-color">${colorDots}</div>
+    `;
+
+    historyList.prepend(row);
+  }
+
+  // शुरुआत में कुछ डमी रिजल्ट्स लोड करना
+  for (let i = 0; i < 5; i++) {
+    generateRandomResult();
+  }
+
+  // 30 सेकंड का ऑटोमैटिक टाइमर लूप
+  setInterval(() => {
+    timeLeft--;
+
+    if (timeLeft < 0) {
+      generateRandomResult();
+      timeLeft = 30; // वापस 30 सेकंड पर सेट
     }
 
-    function updateDisplay() {
-      var curRound = rounds[roundIdx];
-      document.getElementById("rndTitle").innerText = curRound.label;
-      document.getElementById("limitCap").innerText = curRound.limit;
-      document.getElementById("scoreVal").innerText = score;
-      document.getElementById("progressTxt").innerText = roundTaps + " / " + curRound.limit;
-      document.getElementById("taskBtnTxt").innerText = "📺 ऐड देखें (" + adCount + "/2)";
+    const formattedSeconds = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+    timerElement.innerText = `00:${formattedSeconds}`;
+  }, 1000);
+</script>
 
-      var btn = document.getElementById("btnTap");
-      var title = document.getElementById("tapMainTitle");
-      var sub = document.getElementById("tapSub");
-
-      var now = Date.now();
-      // अगर लॉक का समय चल रहा है
-      if (now < unlockTime) {
-        btn.classList.add("locked");
-        title.innerText = "LOCKED 🔒";
-        sub.innerText = "समय पूरा होने तक इंतज़ार करें";
-      } else {
-        btn.classList.remove("locked");
-        title.innerText = "TAP! 🔥";
-        sub.innerText = "दबाते रहो";
-      }
-    }
-
-    // टैप फंक्शन (सख्त लॉक नियम के साथ)
-    function addTap() {
-      var now = Date.now();
-      var curRound = rounds[roundIdx];
-
-      // 1. अगर लॉक का समय बाकी है, तो टैप बिल्कुल नहीं होगा
-      if (now < unlockTime) {
-        showAlert("⏳ राउंड लॉक है! कृपया ऊपर दिए गए टाइमर के खत्म होने का इंतज़ार करें।");
-        return;
-      }
-
-      // 2. टैप बढ़ाएँ
-      score++;
-      roundTaps++;
-
-      // 3. जैसे ही लिमिट पूरी हुई, तुरंत लॉक लगाएं
-      if (roundTaps >= curRound.limit) {
-        unlockTime = Date.now() + curRound.waitMs; // राउंड 1 के लिए पूरे 2 घंटे (7200000 ms)
-        saveState();
-        updateDisplay();
-        showAlert("🛑 " + curRound.limit + " टैप पूरे! अब 2 घंटे का लॉक शुरू हो गया है।");
-        return;
-      }
-
-      saveState();
-      updateDisplay();
-    }
-
-    // ऐड टास्क फ़ंक्शन
-    function doTask() {
-      adCount++;
-      if (adCount >= 2) {
-        score += 500;
-        adCount = 0;
-        showAlert("🎉 बधाई! +500 बोनस टैप्स मिल गए!");
-      } else {
-        showAlert("👍 1 ऐड दर्ज हुआ! 1 और देखें।");
-      }
-      saveState();
-      updateDisplay();
-    }
-
-    function shareGame() {
-      var url = "https://t.me/share/url?url=" + encodeURIComponent("https://t.me/asif_s0_bot/play") + "&text=" + encodeURIComponent("🔥 Tap Battle खेलो और ₹1,000 जीतो! अभी खेलो 👇");
-      window.open(url, '_blank');
-    }
-
-    // टाइमर लूप जो हर सेकंड चेक करेगा
-    function timerLoop() {
-      var now = Date.now();
-      var timeBox = document.getElementById("timeTxt");
-
-      if (now < unlockTime) {
-        var diff = Math.floor((unlockTime - now) / 1000);
-        var h = Math.floor(diff / 3600);
-        var m = Math.floor((diff % 3600) / 60);
-        var s = diff % 60;
-        var pad = function(n) { return (n < 10 ? "0" : "") + n; };
-        timeBox.innerText = pad(h) + ":" + pad(m) + ":" + pad(s);
-      } else {
-        // समय खत्म हुआ तो अगला राउंड अनलॉक करें
-        var curRound = rounds[roundIdx];
-        if (roundTaps >= curRound.limit && unlockTime > 0) {
-          roundIdx = (roundIdx + 1) % rounds.length;
-          roundTaps = 0;
-          unlockTime = 0;
-          saveState();
-          showAlert("🔓 समय पूरा हुआ! नया राउंड अनलॉक हो गया है।");
-        }
-        timeBox.innerText = "अनलॉक है";
-        updateDisplay();
-      }
-    }
-
-    updateDisplay();
-    setInterval(timerLoop, 1000);
-    timerLoop();
-  </script>
 </body>
-          </html>
-          
+</html>
