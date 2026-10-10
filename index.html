@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Win Game - विन गेम</title>
+  <title>विन गेम - Win Game Multi Gaming</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
-    body { background: #070d18; color: #ffffff; display: flex; flex-direction: column; align-items: center; padding: 10px 10px 70px 10px; gap: 10px; }
+    body { background: #070d18; color: #ffffff; display: flex; flex-direction: column; align-items: center; padding: 10px 10px 80px 10px; gap: 10px; }
     .container { width: 100%; max-width: 440px; background: #0f172a; border-radius: 16px; padding: 14px; border: 1px solid #1e293b; box-shadow: 0 10px 35px rgba(0,0,0,0.7); }
 
     /* Top Bar */
@@ -16,13 +16,22 @@
     .icon-btn { background: #1e293b; border: 1px solid #334155; color: #38bdf8; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
     .wallet-badge { background: #1e293b; padding: 5px 12px; border-radius: 20px; color: #facc15; font-size: 14px; font-weight: 800; border: 1px solid #334155; }
 
-    /* Deposit / Withdraw */
+    /* Action Buttons */
     .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
     .act-btn { padding: 9px; border-radius: 8px; border: none; font-weight: 700; color: #fff; cursor: pointer; font-size: 13px; text-align: center; }
     .act-dep { background: linear-gradient(135deg, #10b981, #059669); }
     .act-wth { background: linear-gradient(135deg, #ef4444, #dc2626); }
 
-    /* Period & Countdown */
+    /* Game Selector Menu */
+    .game-nav { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .g-nav-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; text-align: center; }
+    .g-nav-btn.active { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border-color: #3b82f6; }
+
+    /* Common Card Wrappers */
+    .game-section { display: none; }
+    .game-section.active { display: block; }
+
+    /* 1. Color Game Styles */
     .timer-card { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 12px; padding: 10px 14px; border: 1px solid #334155; margin-bottom: 10px; }
     .sub-txt { font-size: 10px; color: #94a3b8; }
     .period-id { font-size: 15px; font-weight: 700; color: #38bdf8; }
@@ -30,18 +39,15 @@
     .time-danger { color: #ef4444 !important; animation: blink 0.6s infinite alternate; }
     @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
 
-    /* 5 Seasons Advance */
     .adv-box { border: 1px solid #3b82f6; background: rgba(30, 58, 138, 0.2); border-radius: 10px; padding: 8px; margin-bottom: 10px; }
     .adv-head { font-size: 11px; font-weight: 700; color: #60a5fa; margin-bottom: 6px; }
     .adv-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
     .adv-item { background: #172540; border-radius: 6px; padding: 4px; text-align: center; border: 1px solid #29406e; }
 
-    /* Multiplier Chips */
     .chip-bar { display: flex; gap: 4px; overflow-x: auto; margin-bottom: 8px; }
     .chip { flex: 1; padding: 6px 0; background: #1e293b; border: 1px solid #334155; color: #94a3b8; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; }
     .chip.active { background: #2563eb; color: #fff; border-color: #3b82f6; }
 
-    /* Betting Controls */
     .c-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px; }
     .c-btn { padding: 10px; border-radius: 8px; border: none; font-weight: 800; font-size: 14px; color: #fff; cursor: pointer; }
     .btn-green { background: #10b981; } .btn-violet { background: #8b5cf6; } .btn-red { background: #ef4444; }
@@ -55,29 +61,36 @@
     .btn-small { background: #3b82f6; color: #fff; font-size: 15px; font-weight: 800; padding: 10px; border-radius: 8px; border: none; cursor: pointer; }
     .locked { opacity: 0.4 !important; pointer-events: none !important; }
 
-    /* Tabs */
-    .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
-    .tab-btn { background: #1e293b; border: none; color: #94a3b8; padding: 7px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; }
+    /* 2. Plane Game Styles */
+    .plane-screen { height: 210px; background: radial-gradient(circle at bottom, #1e293b, #090d16); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; overflow: hidden; margin-bottom: 12px; border: 1px solid #334155; }
+    .plane-mult { font-size: 42px; font-weight: 900; color: #38bdf8; z-index: 2; }
+    .plane-obj { font-size: 36px; position: absolute; transition: transform 0.1s linear; }
+
+    /* 3. Chicken Game Styles */
+    .chicken-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 12px; }
+    .c-tile { aspect-ratio: 1; background: #1e293b; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; border: 1px solid #334155; }
+
+    /* Tabs Bar */
+    .tabs { display: grid; grid-template-columns: 1fr 1fr 1fr 1.2fr; gap: 5px; margin-top: 14px; margin-bottom: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+    .tab-btn { background: #1e293b; border: none; color: #94a3b8; padding: 7px 4px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer; text-align: center; }
     .tab-btn.active { background: #38bdf8; color: #0f172a; }
 
-    .pane { display: none; max-height: 220px; overflow-y: auto; flex-direction: column; gap: 4px; }
+    .pane { display: none; max-height: 200px; overflow-y: auto; flex-direction: column; gap: 4px; }
     .pane.active { display: flex; }
     .row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 6px 8px; background: #162032; border-radius: 6px; font-size: 12px; align-items: center; }
-    .chart-item { display: flex; justify-content: space-between; padding: 6px 8px; background: #162032; border-radius: 6px; font-size: 11px; }
+    .list-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #162032; border-radius: 6px; font-size: 11px; }
 
     .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
     .bg-g { background: #10b981; } .bg-r { background: #ef4444; } .bg-v { background: #a855f7; }
 
-    /* Bottom Navbar */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0d1527; border-top: 1px solid #1e293b; display: flex; justify-content: space-around; padding: 8px 0; z-index: 50; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: #64748b; cursor: pointer; gap: 2px; }
-    .nav-item.active { color: #38bdf8; }
-
-    /* Modals & Settings */
+    /* Modals */
     .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; padding: 16px; z-index: 99; }
-    .modal-box { background: #111927; border: 1px solid #334155; border-radius: 12px; padding: 16px; width: 100%; max-width: 330px; }
+    .modal-box { background: #111927; border: 1px solid #334155; border-radius: 12px; padding: 16px; width: 100%; max-width: 340px; }
     .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1e293b; font-size: 13px; }
     input { width: 100%; padding: 8px; margin: 6px 0; background: #1e293b; border: 1px solid #334155; color: #fff; border-radius: 6px; }
+    .status-tag { padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; }
+    .tag-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+    .tag-success { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid #10b981; }
     .admin-card { width: 100%; max-width: 440px; background: #141f36; border: 1px dashed #f59e0b; border-radius: 12px; padding: 12px; }
   </style>
 </head>
@@ -87,7 +100,7 @@
   <!-- Top Bar -->
   <div class="top-bar">
     <div>
-      <div class="brand">🎮 Win Game (विन गेम)</div>
+      <div class="brand">🎮 विन गेम (Win Game)</div>
       <div style="font-size:10px;color:#64748b">UID: 981402 • VIP 1</div>
     </div>
     <div class="top-right">
@@ -102,67 +115,98 @@
     <button class="act-btn act-wth" onclick="openM('withM')" id="tWth">➖ Withdraw (निकासी)</button>
   </div>
 
-  <!-- Period & Timer -->
-  <div class="timer-card">
-    <div>
-      <div class="sub-txt" id="tPeriodLabel">पीरियड (Period)</div>
-      <div class="period-id" id="pId">--</div>
+  <!-- Multi-Game Switcher -->
+  <div class="game-nav">
+    <div class="g-nav-btn active" onclick="switchGame('colorGame', this)">🎨 कलर गेम</div>
+    <div class="g-nav-btn" onclick="switchGame('planeGame', this)">✈️ एरोप्लेन</div>
+    <div class="g-nav-btn" onclick="switchGame('chickenGame', this)">🐔 चिकन रोड</div>
+  </div>
+
+  <!-- 1. COLOR GAME SECTION -->
+  <div class="game-section active" id="colorGame">
+    <div class="timer-card">
+      <div>
+        <div class="sub-txt" id="tPeriodLabel">पीरियड (Period)</div>
+        <div class="period-id" id="pId">--</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="sub-txt" id="tTimeLabel">समय शेष</div>
+        <div class="timer-val" id="tBox">00:30</div>
+      </div>
     </div>
-    <div style="text-align: right;">
-      <div class="sub-txt" id="tTimeLabel">समय शेष</div>
-      <div class="timer-val" id="tBox">00:30</div>
+
+    <div class="adv-box">
+      <div class="adv-head" id="tAdvHead">⚡ 5 सीजन आगे (Next 5 Results)</div>
+      <div class="adv-grid" id="advGrid"></div>
+    </div>
+
+    <div class="chip-bar" id="lockChips">
+      <div class="chip" onclick="setChip('Random', this)">Random</div>
+      <div class="chip active" onclick="setChip(1, this)">X1</div>
+      <div class="chip" onclick="setChip(5, this)">X5</div>
+      <div class="chip" onclick="setChip(10, this)">X10</div>
+      <div class="chip" onclick="setChip(20, this)">X20</div>
+      <div class="chip" onclick="setChip(50, this)">X50</div>
+      <div class="chip" onclick="setChip(100, this)">X100</div>
+    </div>
+
+    <div class="c-grid" id="lockColors">
+      <button class="c-btn btn-green" onclick="bet('Green')" id="tGreen">Green</button>
+      <button class="c-btn btn-violet" onclick="bet('Violet')" id="tViolet">Violet</button>
+      <button class="c-btn btn-red" onclick="bet('Red')" id="tRed">Red</button>
+    </div>
+
+    <div class="n-grid" id="lockNums">
+      <button class="n-btn cv" onclick="bet('0')">0</button>
+      <button class="n-btn cg" onclick="bet('1')">1</button>
+      <button class="n-btn cr" onclick="bet('2')">2</button>
+      <button class="n-btn cg" onclick="bet('3')">3</button>
+      <button class="n-btn cr" onclick="bet('4')">4</button>
+      <button class="n-btn cv" onclick="bet('5')">5</button>
+      <button class="n-btn cr" onclick="bet('6')">6</button>
+      <button class="n-btn cg" onclick="bet('7')">7</button>
+      <button class="n-btn cr" onclick="bet('8')">8</button>
+      <button class="n-btn cg" onclick="bet('9')">9</button>
+    </div>
+
+    <div class="s-grid" id="lockSizes">
+      <button class="btn-big" onclick="bet('Big')" id="tBig">Big (बड़ा)</button>
+      <button class="btn-small" onclick="bet('Small')" id="tSmall">Small (छोटा)</button>
     </div>
   </div>
 
-  <!-- 5 Seasons Advance -->
-  <div class="adv-box">
-    <div class="adv-head" id="tAdvHead">⚡ 5 सीजन आगे (Next 5 Results)</div>
-    <div class="adv-grid" id="advGrid"></div>
+  <!-- 2. PLANE CRASH GAME SECTION -->
+  <div class="game-section" id="planeGame">
+    <div class="plane-screen">
+      <div class="plane-obj" id="planeObj">✈️</div>
+      <div class="plane-mult" id="planeMult">1.00x</div>
+      <div style="font-size:12px;font-weight:700;color:#94a3b8;margin-top:4px" id="planeStatus">टेक-ऑफ के लिए तैयार</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button class="act-btn" style="background:#10b981;padding:12px;" id="planeBetBtn" onclick="startPlane()">₹50 बेट लगाएं</button>
+      <button class="act-btn" style="background:#f59e0b;padding:12px;display:none;" id="planeCashBtn" onclick="cashOutPlane()">कैश आउट</button>
+    </div>
   </div>
 
-  <!-- Chips -->
-  <div class="chip-bar" id="lockChips">
-    <div class="chip" onclick="setChip('Random', this)">Random</div>
-    <div class="chip active" onclick="setChip(1, this)">X1</div>
-    <div class="chip" onclick="setChip(5, this)">X5</div>
-    <div class="chip" onclick="setChip(10, this)">X10</div>
-    <div class="chip" onclick="setChip(20, this)">X20</div>
-    <div class="chip" onclick="setChip(50, this)">X50</div>
-    <div class="chip" onclick="setChip(100, this)">X100</div>
+  <!-- 3. CHICKEN ROAD GAME SECTION -->
+  <div class="game-section" id="chickenGame">
+    <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;display:flex;justify-content:space-between">
+      <span>🐔 सुरक्षित रास्ता चुनें (बम से बचें)</span>
+      <span style="color:#facc15">कैश आउट: ₹<span id="chickCashVal">0</span></span>
+    </div>
+    <div class="chicken-grid" id="chickenGrid"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button class="act-btn" style="background:#10b981;padding:12px;" id="chickStartBtn" onclick="startChicken()">₹50 से शुरू करें</button>
+      <button class="act-btn" style="background:#f59e0b;padding:12px;display:none;" id="chickCashBtn" onclick="cashOutChicken()">कैश आउट करें</button>
+    </div>
   </div>
 
-  <!-- Colors -->
-  <div class="c-grid" id="lockColors">
-    <button class="c-btn btn-green" onclick="bet('Green')" id="tGreen">Green</button>
-    <button class="c-btn btn-violet" onclick="bet('Violet')" id="tViolet">Violet</button>
-    <button class="c-btn btn-red" onclick="bet('Red')" id="tRed">Red</button>
-  </div>
-
-  <!-- Numbers -->
-  <div class="n-grid" id="lockNums">
-    <button class="n-btn cv" onclick="bet('0')">0</button>
-    <button class="n-btn cg" onclick="bet('1')">1</button>
-    <button class="n-btn cr" onclick="bet('2')">2</button>
-    <button class="n-btn cg" onclick="bet('3')">3</button>
-    <button class="n-btn cr" onclick="bet('4')">4</button>
-    <button class="n-btn cv" onclick="bet('5')">5</button>
-    <button class="n-btn cr" onclick="bet('6')">6</button>
-    <button class="n-btn cg" onclick="bet('7')">7</button>
-    <button class="n-btn cr" onclick="bet('8')">8</button>
-    <button class="n-btn cg" onclick="bet('9')">9</button>
-  </div>
-
-  <!-- Sizes -->
-  <div class="s-grid" id="lockSizes">
-    <button class="btn-big" onclick="bet('Big')" id="tBig">Big (बड़ा)</button>
-    <button class="btn-small" onclick="bet('Small')" id="tSmall">Small (छोटा)</button>
-  </div>
-
-  <!-- Tabs -->
+  <!-- Common Tabs Bar -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('paneHist', this)" id="tabH">Game History</button>
     <button class="tab-btn" onclick="switchTab('paneChart', this)" id="tabC">Chart</button>
     <button class="tab-btn" onclick="switchTab('paneMy', this)" id="tabM">My History</button>
+    <button class="tab-btn" onclick="switchTab('paneWallet', this)" id="tabW">Wallet History</button>
   </div>
 
   <!-- Tab 1 -->
@@ -179,6 +223,11 @@
   <div class="pane" id="paneMy">
     <div id="mList" style="text-align:center;color:#64748b;font-size:12px;padding:20px;">कोई बेट नहीं लगाई गई</div>
   </div>
+
+  <!-- Tab 4 -->
+  <div class="pane" id="paneWallet">
+    <div id="wList" style="text-align:center;color:#64748b;font-size:12px;padding:20px;">कोई विड्रॉल / डिपॉजिट रिकॉर्ड नहीं</div>
+  </div>
 </div>
 
 <!-- Admin Preset Queue -->
@@ -186,14 +235,6 @@
   <h4 style="font-size:12px;color:#fbbf24;margin-bottom:6px">⚙️ Admin: अगले 5 सीजन तय करें</h4>
   <input type="text" id="admInp" placeholder="उदा. 7, 2, 5, 8, 1">
   <button class="act-btn" style="background:#d97706;width:100%" onclick="setAdmin()">सेव करें</button>
-</div>
-
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-  <div class="nav-item active"><span>🏠</span><span>Home</span></div>
-  <div class="nav-item" onclick="openM('pdfModal')"><span>📄</span><span id="bNavRules">Rules PDF</span></div>
-  <div class="nav-item" onclick="openM('depM')"><span>💳</span><span id="bNavWallet">Wallet</span></div>
-  <div class="nav-item" onclick="openM('settingModal')"><span>⚙️</span><span id="bNavSetting">Setting</span></div>
 </div>
 
 <!-- Setting Modal -->
@@ -208,42 +249,24 @@
       </select>
     </div>
     <div class="setting-row">
-      <span id="setSoundLabel">वॉइस / साउंड (Voice)</span>
+      <span id="setSoundLabel">वॉइस / साउंड</span>
       <button class="act-btn" id="sToggleBtn" style="padding:4px 10px;background:#2563eb" onclick="toggleSound()">🔊 ON</button>
     </div>
     <div class="setting-row">
-      <span id="setGuideLabel">गेम रूल्स (Rule Book)</span>
-      <button class="act-btn" style="padding:4px 10px;background:#059669" onclick="openM('pdfModal')">📄 View Rules</button>
+      <span>विड्रॉल रिकॉर्ड्स</span>
+      <button class="act-btn" style="padding:4px 10px;background:#334155" onclick="closeM('settingModal'); switchTab('paneWallet', document.getElementById('tabW'));">📜 View History</button>
     </div>
-    <button class="act-btn" style="background:#475569;width:100%;margin-top:14px" onclick="closeM('settingModal')" id="setCloseBtn">बंद करें</button>
-  </div>
-</div>
-
-<!-- Game Rules PDF Modal -->
-<div class="modal" id="pdfModal">
-  <div class="modal-box" style="max-height:80vh;overflow-y:auto;text-align:left;">
-    <h3 style="margin-bottom:8px;color:#38bdf8" id="ruleHead">📄 Win Game Official Rules</h3>
-    <div id="ruleContent" style="font-size:12px;line-height:1.6;color:#cbd5e1;">
-      <b>1. नियम (Rules):</b><br>
-      - 30 सेकंड का राउंड होता है।<br>
-      - आखिरी 5 सेकंड में बेटिंग लॉक हो जाती है।<br><br>
-      <b>2. पेआउट (Payout):</b><br>
-      - Green (1,3,7,9): 2x रिटर्न<br>
-      - Red (2,4,6,8): 2x रिटर्न<br>
-      - Violet (0,5): 4.5x रिटर्न<br>
-      - Direct Number (0-9): 9x रिटर्न<br>
-      - Big / Small: 2x रिटर्न
-    </div>
-    <button class="act-btn" style="background:#3b82f6;width:100%;margin-top:12px" onclick="closeM('pdfModal')">OK / समझ गया</button>
+    <button class="act-btn" style="background:#475569;width:100%;margin-top:14px" onclick="closeM('settingModal')">बंद करें</button>
   </div>
 </div>
 
 <!-- Deposit Modal -->
 <div class="modal" id="depM">
   <div class="modal-box">
-    <h4>Deposit</h4>
-    <input type="number" id="depAmt" placeholder="राशि (Amount)">
-    <button class="act-btn act-dep" style="width:100%" onclick="addMoney()">पुष्टि करें</button><br><br>
+    <h4>डिपॉजिट (Add Money)</h4>
+    <input type="number" id="depAmt" placeholder="राशि (₹500)">
+    <input type="text" id="depRef" placeholder="UPI ID / UTR No.">
+    <button class="act-btn act-dep" style="width:100%;margin-top:4px" onclick="handleDeposit()">पुष्टि करें (Pay)</button><br><br>
     <button class="act-btn" style="background:#475569;width:100%" onclick="closeM('depM')">रद्द करें</button>
   </div>
 </div>
@@ -251,65 +274,182 @@
 <!-- Withdraw Modal -->
 <div class="modal" id="withM">
   <div class="modal-box">
-    <h4>Withdrawal</h4>
-    <input type="number" id="wAmt" placeholder="निकासी राशि">
-    <button class="act-btn act-wth" style="width:100%" onclick="subMoney()">विड्रॉल लगाएं</button><br><br>
+    <h4>विड्रॉल (Withdraw Money)</h4>
+    <input type="number" id="wAmt" placeholder="निकासी राशि (₹300)">
+    <input type="text" id="wUpi" placeholder="UPI ID / बैंक खाता संख्या">
+    <input type="text" id="wName" placeholder="खाताधारक का नाम">
+    <button class="act-btn act-wth" style="width:100%;margin-top:4px" onclick="handleWithdraw()">विड्रॉल लगाएं</button><br><br>
+    <button class="act-btn" style="background:#334155;width:100%;margin-bottom:6px" onclick="closeM('withM'); switchTab('paneWallet', document.getElementById('tabW'));">📜 विड्रॉल हिस्ट्री देखें</button>
     <button class="act-btn" style="background:#475569;width:100%" onclick="closeM('withM')">रद्द करें</button>
   </div>
 </div>
 
 <script>
   var bal = 1000, sec = 30, seq = 1350, multiplier = 1, currentLang = 'hi', soundOn = true;
-  var queue = [], myBets = [];
+  var queue = [], myBets = [], walletLogs = [];
 
   function openM(id){ document.getElementById(id).style.display = 'flex'; }
   function closeM(id){ document.getElementById(id).style.display = 'none'; }
 
+  function switchGame(gameId, el) {
+    document.querySelectorAll('.game-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.g-nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(gameId).classList.add('active');
+    el.classList.add('active');
+  }
+
+  function getTimeStr() {
+    var now = new Date();
+    return now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  }
+
+  function handleDeposit() {
+    var a = Number(document.getElementById('depAmt').value);
+    var ref = document.getElementById('depRef').value || 'UPI-REF';
+    if(a > 0){
+      bal += a;
+      document.getElementById('bal').innerText = bal.toFixed(2);
+      walletLogs.unshift({ type: 'Deposit', amount: a, info: ref, time: getTimeStr(), status: 'Success' });
+      renderWalletHistory();
+      alert('₹' + a + ' जमा हो गए!');
+      closeM('depM');
+    }
+  }
+
+  function handleWithdraw() {
+    var a = Number(document.getElementById('wAmt').value);
+    var acc = document.getElementById('wUpi').value || 'Bank/UPI';
+    if(a > 0 && a <= bal){
+      bal -= a;
+      document.getElementById('bal').innerText = bal.toFixed(2);
+      walletLogs.unshift({ type: 'Withdraw', amount: a, info: acc, time: getTimeStr(), status: 'Pending' });
+      renderWalletHistory();
+      alert('विड्रॉल रिक्वेस्ट सबमिट हो गई! ₹' + a);
+      closeM('withM');
+    } else {
+      alert('अपर्याप्त बैलेंस!');
+    }
+  }
+
+  function renderWalletHistory() {
+    var w = document.getElementById('wList');
+    if(walletLogs.length === 0) return;
+    w.innerHTML = '';
+    for(var i = 0; i < walletLogs.length; i++){
+      var item = walletLogs[i];
+      var isW = item.type === 'Withdraw';
+      var tagClass = item.status === 'Success' ? 'tag-success' : 'tag-pending';
+      w.innerHTML += `
+        <div class="list-item">
+          <div>
+            <div style="font-weight:700;color:${isW ? '#ef4444' : '#10b981'}">${isW ? '➖ Withdrawal' : '➕ Deposit'}</div>
+            <div style="color:#64748b;font-size:10px">${item.info} • ${item.time}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:800;color:#facc15">₹${item.amount}</div>
+            <span class="status-tag ${tagClass}">${item.status}</span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  /* --- AVIATOR / PLANE LOGIC --- */
+  var pInterval = null, pMult = 1.00, pCrash = 2.0, pLive = false;
+  function startPlane() {
+    if(bal < 50){ alert('बैलेंस कम है!'); return; }
+    bal -= 50; document.getElementById('bal').innerText = bal.toFixed(2);
+    pLive = true; pMult = 1.00; pCrash = (Math.random() * 3.5 + 1.2).toFixed(2);
+    document.getElementById('planeBetBtn').style.display = 'none';
+    document.getElementById('planeCashBtn').style.display = 'block';
+    document.getElementById('planeStatus').innerText = 'जहाज उड़ रहा है...';
+    document.getElementById('planeStatus').style.color = '#38bdf8';
+    var pObj = document.getElementById('planeObj');
+
+    pInterval = setInterval(function(){
+      pMult += 0.04;
+      document.getElementById('planeMult').innerText = pMult.toFixed(2) + 'x';
+      pObj.style.transform = 'translate(' + Math.min(90, (pMult-1)*35) + 'px, ' + Math.max(-45, 30 - (pMult-1)*25) + 'px)';
+      if(pMult >= pCrash){
+        clearInterval(pInterval); pLive = false;
+        document.getElementById('planeMult').innerText = pCrash + 'x';
+        document.getElementById('planeStatus').innerText = 'क्रैश हो गया! (Flew Away)';
+        document.getElementById('planeStatus').style.color = '#ef4444';
+        document.getElementById('planeCashBtn').style.display = 'none';
+        document.getElementById('planeBetBtn').style.display = 'block';
+      }
+    }, 100);
+  }
+
+  function cashOutPlane() {
+    if(!pLive) return;
+    clearInterval(pInterval); pLive = false;
+    var win = 50 * pMult; bal += win;
+    document.getElementById('bal').innerText = bal.toFixed(2);
+    document.getElementById('planeStatus').innerText = 'जीत गए: ₹' + win.toFixed(2);
+    document.getElementById('planeStatus').style.color = '#10b981';
+    document.getElementById('planeCashBtn').style.display = 'none';
+    document.getElementById('planeBetBtn').style.display = 'block';
+  }
+
+  /* --- CHICKEN ROAD LOGIC --- */
+  var cLive = false, cStep = 0;
+  function initChickenGrid() {
+    var g = document.getElementById('chickenGrid'); g.innerHTML = '';
+    for(var i = 0; i < 25; i++){
+      var tile = document.createElement('div');
+      tile.className = 'c-tile'; tile.innerText = '❓';
+      tile.onclick = (function(t){ return function(){ stepChicken(t); }; })(tile);
+      g.appendChild(tile);
+    }
+  }
+  function startChicken() {
+    if(bal < 50){ alert('बैलेंस कम है!'); return; }
+    bal -= 50; document.getElementById('bal').innerText = bal.toFixed(2);
+    cLive = true; cStep = 0;
+    document.getElementById('chickStartBtn').style.display = 'none';
+    document.getElementById('chickCashBtn').style.display = 'block';
+    document.getElementById('chickCashVal').innerText = '0';
+    initChickenGrid();
+  }
+  function stepChicken(tile) {
+    if(!cLive || tile.innerText !== '❓') return;
+    if(Math.random() < 0.22){
+      tile.innerText = '💥'; tile.style.background = '#ef4444';
+      cLive = false; alert('ओह! बम फूट गया, चिकन आउट!');
+      document.getElementById('chickStartBtn').style.display = 'block';
+      document.getElementById('chickCashBtn').style.display = 'none';
+    } else {
+      tile.innerText = '🍗'; tile.style.background = '#10b981';
+      cStep++;
+      var win = (50 * (1 + cStep * 0.4)).toFixed(2);
+      document.getElementById('chickCashVal').innerText = win;
+    }
+  }
+  function cashOutChicken() {
+    if(!cLive) return;
+    var win = Number(document.getElementById('chickCashVal').innerText);
+    bal += win; document.getElementById('bal').innerText = bal.toFixed(2);
+    cLive = false; alert('सुरक्षित! आपने निकाले ₹' + win);
+    document.getElementById('chickStartBtn').style.display = 'block';
+    document.getElementById('chickCashBtn').style.display = 'none';
+  }
+
+  /* --- COLOR PREDICTION LOGIC --- */
   function changeLang(val) {
     currentLang = val;
-    if(currentLang === 'en') {
-      document.getElementById('tDep').innerText = '➕ Deposit';
-      document.getElementById('tWth').innerText = '➖ Withdraw';
-      document.getElementById('tPeriodLabel').innerText = 'Period';
-      document.getElementById('tTimeLabel').innerText = 'Time Left';
-      document.getElementById('tAdvHead').innerText = '⚡ Next 5 Results (Advance)';
-      document.getElementById('tBig').innerText = 'Big';
-      document.getElementById('tSmall').innerText = 'Small';
-      document.getElementById('tabH').innerText = 'Game History';
-      document.getElementById('tabC').innerText = 'Chart';
-      document.getElementById('tabM').innerText = 'My Orders';
-      document.getElementById('setHead').innerText = '⚙️ Settings';
-      document.getElementById('setLangLabel').innerText = 'Language';
-      document.getElementById('setSoundLabel').innerText = 'Voice Announcement';
-      document.getElementById('setGuideLabel').innerText = 'Rule Book';
-      document.getElementById('setCloseBtn').innerText = 'Close';
-      document.getElementById('bNavRules').innerText = 'Rules PDF';
-      document.getElementById('bNavWallet').innerText = 'Wallet';
-      document.getElementById('bNavSetting').innerText = 'Setting';
-      document.getElementById('ruleHead').innerText = '📄 Win Game Official Rules';
-      document.getElementById('ruleContent').innerHTML = '<b>1. Rules:</b><br>- 30 seconds round.<br>- Betting locks in last 5 seconds.<br><br><b>2. Payout:</b><br>- Green (1,3,7,9): 2x return<br>- Red (2,4,6,8): 2x return<br>- Violet (0,5): 4.5x return<br>- Single Number (0-9): 9x return<br>- Big / Small: 2x return';
-    } else {
-      document.getElementById('tDep').innerText = '➕ Deposit (जमा)';
-      document.getElementById('tWth').innerText = '➖ Withdraw (निकासी)';
-      document.getElementById('tPeriodLabel').innerText = 'पीरियड (Period)';
-      document.getElementById('tTimeLabel').innerText = 'समय शेष';
-      document.getElementById('tAdvHead').innerText = '⚡ 5 सीजन आगे (Next 5 Results)';
-      document.getElementById('tBig').innerText = 'Big (बड़ा)';
-      document.getElementById('tSmall').innerText = 'Small (छोटा)';
-      document.getElementById('tabH').innerText = 'Game History';
-      document.getElementById('tabC').innerText = 'Chart';
-      document.getElementById('tabM').innerText = 'My History';
-      document.getElementById('setHead').innerText = '⚙️ सेटिंग्स (Settings)';
-      document.getElementById('setLangLabel').innerText = 'भाषा (Language)';
-      document.getElementById('setSoundLabel').innerText = 'वॉइस / साउंड (Voice)';
-      document.getElementById('setGuideLabel').innerText = 'गेम रूल्स (Rule Book)';
-      document.getElementById('setCloseBtn').innerText = 'बंद करें';
-      document.getElementById('bNavRules').innerText = 'Rules PDF';
-      document.getElementById('bNavWallet').innerText = 'Wallet';
-      document.getElementById('bNavSetting').innerText = 'Setting';
-      document.getElementById('ruleHead').innerText = '📄 Win Game Official Rules';
-      document.getElementById('ruleContent').innerHTML = '<b>1. नियम (Rules):</b><br>- 30 सेकंड का राउंड होता है।<br>- आखिरी 5 सेकंड में बेटिंग लॉक हो जाती है।<br><br><b>2. पेआउट (Payout):</b><br>- Green (1,3,7,9): 2x रिटर्न<br>- Red (2,4,6,8): 2x रिटर्न<br>- Violet (0,5): 4.5x रिटर्न<br>- Direct Number (0-9): 9x रिटर्न<br>- Big / Small: 2x रिटर्न';
-    }
+    var isEn = currentLang === 'en';
+    document.getElementById('tDep').innerText = isEn ? '➕ Deposit' : '➕ Deposit (जमा)';
+    document.getElementById('tWth').innerText = isEn ? '➖ Withdraw' : '➖ Withdraw (निकासी)';
+    document.getElementById('tPeriodLabel').innerText = isEn ? 'Period' : 'पीरियड (Period)';
+    document.getElementById('tTimeLabel').innerText = isEn ? 'Time Left' : 'समय शेष';
+    document.getElementById('tAdvHead').innerText = isEn ? '⚡ Next 5 Results (Advance)' : '⚡ 5 सीजन आगे (Next 5 Results)';
+    document.getElementById('tBig').innerText = isEn ? 'Big' : 'Big (बड़ा)';
+    document.getElementById('tSmall').innerText = isEn ? 'Small' : 'Small (छोटा)';
+    document.getElementById('tabH').innerText = 'Game History';
+    document.getElementById('tabC').innerText = 'Chart';
+    document.getElementById('tabM').innerText = isEn ? 'My Orders' : 'My History';
+    document.getElementById('tabW').innerText = isEn ? 'Wallet Logs' : 'Wallet History';
   }
 
   function toggleSound() {
@@ -324,16 +464,6 @@
       u.lang = currentLang === 'hi' ? 'hi-IN' : 'en-US';
       window.speechSynthesis.speak(u);
     }
-  }
-
-  function addMoney(){
-    var a = Number(document.getElementById('depAmt').value);
-    if(a > 0){ bal += a; document.getElementById('bal').innerText = bal.toFixed(2); closeM('depM'); }
-  }
-  function subMoney(){
-    var a = Number(document.getElementById('wAmt').value);
-    if(a > 0 && a <= bal){ bal -= a; document.getElementById('bal').innerText = bal.toFixed(2); closeM('withM'); }
-    else alert('कम बैलेंस!');
   }
 
   function setChip(val, el){
@@ -360,7 +490,7 @@
     document.querySelectorAll('.pane').forEach(function(p){ p.classList.remove('active'); });
     document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
     document.getElementById(id).classList.add('active');
-    el.classList.add('active');
+    if(el) el.classList.add('active');
   }
 
   function getP(s){
@@ -370,4 +500,74 @@
 
   function getD(n){
     var sz = n >= 5 ? 'Big' : 'Small', c = 'cr', dot = '<span class="dot bg-r"></span>';
-    if(n === 0){ c = 'cv'; dot = '<span class="dot bg-r"></span>
+    if(n === 0){ c = 'cv'; dot = '<span class="dot bg-r"></span><span class="dot bg-v"></span>'; }
+    else if(n === 5){ c = 'cv'; dot = '<span class="dot bg-g"></span><span class="dot bg-v"></span>'; }
+    else if([1,3,7,9].indexOf(n) !== -1){ c = 'cg'; dot = '<span class="dot bg-g"></span>'; }
+    return { sz: sz, c: c, dot: dot };
+  }
+
+  function fillQ(){
+    while(queue.length < 5) queue.push(Math.floor(Math.random()*10));
+    var g = document.getElementById('advGrid'); g.innerHTML = '';
+    queue.forEach(function(n, i){
+      var d = getD(n);
+      g.innerHTML += '<div class="adv-item"><div style="font-size:9px;color:#94a3b8">+' + (i+1) + '</div><div class="' + d.c + '" style="font-size:15px;font-weight:800">' + n + '</div><div style="font-size:9px">' + d.sz + '</div></div>';
+    });
+  }
+
+  function runRound(){
+    var win = queue.shift(); fillQ();
+    var d = getD(win);
+    var p = getP(seq);
+
+    speakText(currentLang === 'hi' ? ('नंबर ' + win + ', ' + d.sz + ' जीता') : ('Number ' + win + ', ' + d.sz + ' wins'));
+
+    var r = document.createElement('div'); r.className = 'row';
+    r.innerHTML = '<div>' + p + '</div><div class="' + d.c + '" style="text-align:center;font-weight:800">' + win + '</div><div style="text-align:center">' + d.sz + '</div><div style="text-align:right">' + d.dot + '</div>';
+    document.getElementById('hList').prepend(r);
+
+    var c = document.createElement('div'); c.className = 'list-item';
+    c.innerHTML = '<div>' + p + '</div><div class="' + d.c + '" style="font-weight:800">' + win + ' (' + d.sz + ')</div><div>' + d.dot + '</div>';
+    document.getElementById('cList').prepend(c);
+
+    seq++;
+    document.getElementById('pId').innerText = getP(seq);
+  }
+
+  function renderMy(){
+    var m = document.getElementById('mList'); m.innerHTML = '';
+    for(var i = myBets.length - 1; i >= 0; i--){
+      var b = myBets[i];
+      m.innerHTML += '<div class="list-item"><div>' + b.period + '</div><div>' + b.choice + '</div><div style="color:#facc15">₹' + b.cost + '</div></div>';
+    }
+  }
+
+  function setAdmin(){
+    var v = document.getElementById('admInp').value;
+    if(v.trim()){
+      var arr = v.split(',').map(function(x){ return Number(x.trim()); }).filter(function(x){ return !isNaN(x) && x >= 0 && x <= 9; });
+      if(arr.length){ queue = arr.concat(queue).slice(0,5); fillQ(); document.getElementById('admInp').value = ''; }
+    }
+  }
+
+  // Init Color & Chicken
+  fillQ(); initChickenGrid();
+  document.getElementById('pId').innerText = getP(seq);
+  for(var k = 0; k < 3; k++) runRound();
+
+  setInterval(function(){
+    sec--;
+    if(sec <= 5 && sec > 0){
+      document.getElementById('tBox').classList.add('time-danger');
+      ['lockChips','lockColors','lockNums','lockSizes'].forEach(function(id){ document.getElementById(id).classList.add('locked'); });
+    } else {
+      document.getElementById('tBox').classList.remove('time-danger');
+      ['lockChips','lockColors','lockNums','lockSizes'].forEach(function(id){ document.getElementById(id).classList.remove('locked'); });
+    }
+    if(sec < 0){ runRound(); sec = 30; }
+    document.getElementById('tBox').innerText = '00:' + (sec < 10 ? '0' + sec : sec);
+  }, 1000);
+</script>
+
+</body>
+</html>
